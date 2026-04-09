@@ -16,6 +16,7 @@ namespace Smart_Clinic_System
         {
             InitializeComponent();
             this.CenterToParent();
+
         }
 
         private void btnPatientBack_Click(object sender, EventArgs e)
@@ -35,7 +36,21 @@ namespace Smart_Clinic_System
 
         private void btnSearchPatient_Click(object sender, EventArgs e)
         {
+            if (txtPatientNID.Text.Length == 14 && double.TryParse(txtPatientNID.Text, out _))
+            {
+                string[] AnalyzedID = Doctor_Panel.AnalyzeID(txtPatientNID.Text);
+                if (AnalyzedID != null && AnalyzedID.Length > 0)
+                {
 
+                    Patient_Panel Pa = new Patient_Panel(txtPatientNID.Text); Pa.Show();
+                    this.Close();
+
+                }
+            }
+            else
+            {
+                MessageBox.Show("الرقم القومي غير صحيح، يجب أن يكون 14 رقم.", "بيانات غير صحيحة", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }

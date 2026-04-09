@@ -19,25 +19,53 @@ namespace Smart_Clinic_System
 
             lblNameValue.Text = _patient.patients.FullName;
             lblIDValue.Text = _patient.patients.NationalID;
+            Num.Text = _patient.patients.PhoneNumber;
 
             LoadVisitDates();
         }
 
         private void LoadVisitDates()
         {
-            var doctorData = _patient.patients.Doctors.FirstOrDefault(d => d.NationalID == _doctor.id);
-            if (doctorData != null)
+            try
             {
-                dgvVisitsList.DataSource = doctorData.Visits.Select(v => new
-                {
-                    Date = v.Date,
-                    Diagnosis = v.Diagnosis,
-                    _Treatment = v.Treatment,
-                    _Report = v.Report
-                }).ToList();
+                string currentDoctorSpecialty = _doctor.info.specialty;
 
-                if (dgvVisitsList.Columns.Contains("_Treatment")) dgvVisitsList.Columns["_Treatment"].Visible = false;
-                if (dgvVisitsList.Columns.Contains("_Report")) dgvVisitsList.Columns["_Report"].Visible = false;
+                if (_patient.patients.Doctors == null) return;
+
+                var relevantVisits = _patient.patients.Doctors
+                    .Where(d => d.Specialty == currentDoctorSpecialty)
+                    .SelectMany(d => d.Visits.Select(v => new
+                    {
+                        Date = v.Date,
+                        DoctorName = d.FullName,
+                        Diagnosis = v.Diagnosis,
+                        _Treatment = v.Treatment,
+                        _Report = v.Report
+                    }))
+                    .ToList();
+
+                var sortedVisits = relevantVisits
+                    .OrderByDescending(v => {
+                        DateTime dt;
+                        return DateTime.TryParse(v.Date, out dt) ? dt : DateTime.MinValue;
+                    })
+                    .ToList();
+
+                dgvVisitsList.DataSource = sortedVisits;
+
+                if (dgvVisitsList.Columns.Contains("Date")) dgvVisitsList.Columns["Date"].HeaderText = "التاريخ";
+                if (dgvVisitsList.Columns.Contains("DoctorName")) dgvVisitsList.Columns["DoctorName"].HeaderText = "الطبيب";
+                if (dgvVisitsList.Columns.Contains("Diagnosis")) dgvVisitsList.Columns["Diagnosis"].HeaderText = "التشخيص";
+
+                string[] hidden = { "_Treatment", "_Report" };
+                foreach (var col in hidden)
+                    if (dgvVisitsList.Columns.Contains(col)) dgvVisitsList.Columns[col].Visible = false;
+
+                dgvVisitsList_SelectionChanged(null, null);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("حدث خطأ أثناء تحميل البيانات: " + ex.Message);
             }
         }
 

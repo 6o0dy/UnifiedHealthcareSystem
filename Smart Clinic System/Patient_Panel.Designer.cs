@@ -26,6 +26,7 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Patient_Panel));
             pnlPatientInfo = new Panel();
+            booking = new Button();
             lblPatientTitle = new Label();
             lblName = new Label();
             txtName = new TextBox();
@@ -43,10 +44,6 @@
             txtPhone = new TextBox();
             grpVisits = new GroupBox();
             dgvVisits = new DataGridView();
-            colVisitDate = new DataGridViewTextBoxColumn();
-            colDoctor = new DataGridViewTextBoxColumn();
-            colSpecialty = new DataGridViewTextBoxColumn();
-            colShortDiagnosis = new DataGridViewTextBoxColumn();
             grpVisitDetails = new GroupBox();
             lblDetailDiagnosis = new Label();
             txtDetailDiagnosis = new TextBox();
@@ -54,11 +51,10 @@
             txtDetailTreatment = new TextBox();
             lblDetailReports = new Label();
             txtDetailReports = new TextBox();
-            lblDetailNextVisit = new Label();
-            txtDetailNextVisit = new TextBox();
+            lblDate = new Label();
+            txtDate = new TextBox();
             btnRefresh = new Button();
             btnBack = new Button();
-            button1 = new Button();
             pnlPatientInfo.SuspendLayout();
             grpVisits.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dgvVisits).BeginInit();
@@ -67,7 +63,7 @@
             // 
             // pnlPatientInfo
             // 
-            pnlPatientInfo.Controls.Add(button1);
+            pnlPatientInfo.Controls.Add(booking);
             pnlPatientInfo.Controls.Add(lblPatientTitle);
             pnlPatientInfo.Controls.Add(lblName);
             pnlPatientInfo.Controls.Add(txtName);
@@ -87,6 +83,17 @@
             pnlPatientInfo.Name = "pnlPatientInfo";
             pnlPatientInfo.Size = new Size(960, 120);
             pnlPatientInfo.TabIndex = 0;
+            // 
+            // booking
+            // 
+            booking.BackColor = Color.FromArgb(0, 192, 0);
+            booking.Location = new Point(846, 40);
+            booking.Name = "booking";
+            booking.Size = new Size(93, 59);
+            booking.TabIndex = 15;
+            booking.Text = "حجز موعد";
+            booking.UseVisualStyleBackColor = false;
+            booking.Click += Booking_Click;
             // 
             // lblPatientTitle
             // 
@@ -163,13 +170,13 @@
             txtAge.Location = new Point(90, 75);
             txtAge.Name = "txtAge";
             txtAge.ReadOnly = true;
-            txtAge.Size = new Size(80, 23);
+            txtAge.Size = new Size(115, 23);
             txtAge.TabIndex = 8;
             // 
             // lblGender
             // 
             lblGender.AutoSize = true;
-            lblGender.Location = new Point(190, 78);
+            lblGender.Location = new Point(215, 78);
             lblGender.Name = "lblGender";
             lblGender.Size = new Size(39, 15);
             lblGender.TabIndex = 9;
@@ -177,10 +184,10 @@
             // 
             // txtGender
             // 
-            txtGender.Location = new Point(240, 75);
+            txtGender.Location = new Point(259, 75);
             txtGender.Name = "txtGender";
             txtGender.ReadOnly = true;
-            txtGender.Size = new Size(70, 23);
+            txtGender.Size = new Size(51, 23);
             txtGender.TabIndex = 10;
             // 
             // lblGovernorate
@@ -234,42 +241,15 @@
             dgvVisits.AllowUserToDeleteRows = false;
             dgvVisits.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dgvVisits.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvVisits.Columns.AddRange(new DataGridViewColumn[] { colVisitDate, colDoctor, colSpecialty, colShortDiagnosis });
             dgvVisits.Location = new Point(10, 25);
             dgvVisits.MultiSelect = false;
             dgvVisits.Name = "dgvVisits";
             dgvVisits.ReadOnly = true;
+            dgvVisits.RowHeadersVisible = false;
             dgvVisits.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgvVisits.Size = new Size(600, 380);
             dgvVisits.TabIndex = 0;
-            // 
-            // colVisitDate
-            // 
-            colVisitDate.FillWeight = 30F;
-            colVisitDate.HeaderText = "تاريخ الزيارة";
-            colVisitDate.Name = "colVisitDate";
-            colVisitDate.ReadOnly = true;
-            // 
-            // colDoctor
-            // 
-            colDoctor.FillWeight = 30F;
-            colDoctor.HeaderText = "الدكتور";
-            colDoctor.Name = "colDoctor";
-            colDoctor.ReadOnly = true;
-            // 
-            // colSpecialty
-            // 
-            colSpecialty.FillWeight = 25F;
-            colSpecialty.HeaderText = "التخصص";
-            colSpecialty.Name = "colSpecialty";
-            colSpecialty.ReadOnly = true;
-            // 
-            // colShortDiagnosis
-            // 
-            colShortDiagnosis.FillWeight = 35F;
-            colShortDiagnosis.HeaderText = "ملخص التشخيص";
-            colShortDiagnosis.Name = "colShortDiagnosis";
-            colShortDiagnosis.ReadOnly = true;
+            dgvVisits.SelectionChanged += dgvVisits_SelectionChanged;
             // 
             // grpVisitDetails
             // 
@@ -279,8 +259,8 @@
             grpVisitDetails.Controls.Add(txtDetailTreatment);
             grpVisitDetails.Controls.Add(lblDetailReports);
             grpVisitDetails.Controls.Add(txtDetailReports);
-            grpVisitDetails.Controls.Add(lblDetailNextVisit);
-            grpVisitDetails.Controls.Add(txtDetailNextVisit);
+            grpVisitDetails.Controls.Add(lblDate);
+            grpVisitDetails.Controls.Add(txtDate);
             grpVisitDetails.Font = new Font("Segoe UI", 10F);
             grpVisitDetails.Location = new Point(660, 150);
             grpVisitDetails.Name = "grpVisitDetails";
@@ -346,22 +326,22 @@
             txtDetailReports.Size = new Size(290, 60);
             txtDetailReports.TabIndex = 5;
             // 
-            // lblDetailNextVisit
+            // lblDate
             // 
-            lblDetailNextVisit.AutoSize = true;
-            lblDetailNextVisit.Location = new Point(12, 366);
-            lblDetailNextVisit.Name = "lblDetailNextVisit";
-            lblDetailNextVisit.Size = new Size(80, 19);
-            lblDetailNextVisit.TabIndex = 6;
-            lblDetailNextVisit.Text = "موعد الزيارة";
+            lblDate.AutoSize = true;
+            lblDate.Location = new Point(12, 374);
+            lblDate.Name = "lblDate";
+            lblDate.Size = new Size(80, 19);
+            lblDate.TabIndex = 6;
+            lblDate.Text = "موعد الزيارة";
             // 
-            // txtDetailNextVisit
+            // txtDate
             // 
-            txtDetailNextVisit.Location = new Point(94, 363);
-            txtDetailNextVisit.Name = "txtDetailNextVisit";
-            txtDetailNextVisit.ReadOnly = true;
-            txtDetailNextVisit.Size = new Size(120, 25);
-            txtDetailNextVisit.TabIndex = 7;
+            txtDate.Location = new Point(118, 371);
+            txtDate.Name = "txtDate";
+            txtDate.ReadOnly = true;
+            txtDate.Size = new Size(120, 25);
+            txtDate.TabIndex = 7;
             // 
             // btnRefresh
             // 
@@ -383,16 +363,6 @@
             btnBack.Text = "العودة";
             btnBack.Click += btnBack_Click;
             // 
-            // button1
-            // 
-            button1.BackColor = Color.FromArgb(0, 192, 0);
-            button1.Location = new Point(852, 45);
-            button1.Name = "button1";
-            button1.Size = new Size(93, 39);
-            button1.TabIndex = 15;
-            button1.Text = "حجز موعد";
-            button1.UseVisualStyleBackColor = false;
-            // 
             // Patient_Panel
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -412,7 +382,6 @@
             StartPosition = FormStartPosition.CenterScreen;
             Text = "الملف الطبي للمريض";
             FormClosing += Patient_Panel_FormClosing;
-            Load += Patient_Panel_Load;
             pnlPatientInfo.ResumeLayout(false);
             pnlPatientInfo.PerformLayout();
             grpVisits.ResumeLayout(false);
@@ -451,10 +420,6 @@
 
         private System.Windows.Forms.GroupBox grpVisits;
         private System.Windows.Forms.DataGridView dgvVisits;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colVisitDate;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colDoctor;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colSpecialty;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colShortDiagnosis;
 
         private System.Windows.Forms.GroupBox grpVisitDetails;
         private System.Windows.Forms.Label lblDetailDiagnosis;
@@ -463,11 +428,11 @@
         private System.Windows.Forms.TextBox txtDetailTreatment;
         private System.Windows.Forms.Label lblDetailReports;
         private System.Windows.Forms.TextBox txtDetailReports;
-        private System.Windows.Forms.Label lblDetailNextVisit;
-        private System.Windows.Forms.TextBox txtDetailNextVisit;
+        private System.Windows.Forms.Label lblDate;
+        private System.Windows.Forms.TextBox txtDate;
 
         private System.Windows.Forms.Button btnRefresh;
         private System.Windows.Forms.Button btnBack;
-        private Button button1;
+        private Button booking;
     }
 }

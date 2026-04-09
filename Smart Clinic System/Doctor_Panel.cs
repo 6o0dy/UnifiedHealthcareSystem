@@ -21,6 +21,7 @@ namespace Smart_Clinic_System
 
             lblDoctorName.Text = $"Doctor: [ {account.info.name} ]";
             RefreshMyPatients();
+            RefreshBookingGrid();
         }
 
         private void btnAddPatient_Click(object sender, EventArgs e)
@@ -30,21 +31,24 @@ namespace Smart_Clinic_System
                 MessageBox.Show("Please enter Patient Name and National ID.");
                 return;
             }
-
-            visit newVisit = new visit
+            try
             {
-                Date = DateTime.Now.ToString("yyyy-MM-dd"),
-                Diagnosis = txtDiagnosis.Text,
-                Treatment = txtTreatment.Text,
-                Report = txtReports.Text
-            };
+                visit newVisit = new visit
+                {
+                    Date = DateTime.Now.ToString("yyyy-MM-dd"),
+                    Diagnosis = txtDiagnosis.Text,
+                    Treatment = txtTreatment.Text,
+                    Report = txtReports.Text
+                };
 
-            manager.AddOrUpdateVisit(txtNationalID_Add.Text, txtName.Text, txtPhone.Text, newVisit, account);
+                manager.AddOrUpdateVisit(txtNationalID_Add.Text, txtName.Text, txtPhone.Text, newVisit, account);
 
-            MessageBox.Show("Visit saved successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Visit saved successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-            ClearInputs();
-            RefreshMyPatients();
+                ClearInputs();
+                RefreshMyPatients();
+            }
+            catch (Exception error) { MessageBox.Show(error.Message, "بيانات غير صحيحة", MessageBoxButtons.OK, MessageBoxIcon.Warning); }
         }
 
         private void btnSearchFollow_Click(object sender, EventArgs e)
@@ -110,6 +114,27 @@ namespace Smart_Clinic_System
             }
         }
 
+        private void txtNationalID_Add_TextChanged(object sender, EventArgs e)
+        {
+            txtDOB.Clear();
+            txtGender.Clear();
+            txtGovernorate.Clear();
+            txtAge.Clear();
+            string nationalId = txtNationalID_Add.Text;
+            string[] analyzedID = AnalyzeID(nationalId);
+            try
+            {
+                if (analyzedID != null)
+                {
+                    txtDOB.Text = analyzedID[0];
+                    txtAge.Text = analyzedID[1];
+                    txtGender.Text = analyzedID[2];
+                    txtGovernorate.Text = analyzedID[3];
+                }
+            }
+            catch (Exception err) { MessageBox.Show(err.Message, "خطأ قي الرقم القومي", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+        }
+
         private void RefreshMyPatients()
         {
             var myPatients = manager.PatientsData
@@ -148,104 +173,137 @@ namespace Smart_Clinic_System
                 Application.Exit();
             }
         }
-    }
 
-    //============================================================================================================================
-
-    public class PatientManager
-    {
-        private const string FileName = "PatientsFile.json";
-        public List<recordData> PatientsData { get; private set; }
-
-        public PatientManager()
+        public static string[] AnalyzeID(string id)
         {
-            LoadData();
+            if (string.IsNullOrEmpty(id))
+            {
+                return null;
+            }
+
+            if (id.Length == 14)
+            {
+                try
+                {
+                    string centuryCode = id.Substring(0, 1);
+                    string year = id.Substring(1, 2);
+                    string month = id.Substring(3, 2);
+                    string day = id.Substring(5, 2);
+
+                    if (!(centuryCode == "2" || centuryCode == "3")) { throw new Exception("خطأ في الرقم القومي الخاص بك"); }
+                    string fullYear = (centuryCode == "2" ? "19" : "20") + year;
+                    DateTime birthDate = new DateTime(int.Parse(fullYear), int.Parse(month), int.Parse(day));
+
+                    DateTime today = DateTime.Today;
+                    int ageYear = today.Year - birthDate.Year;
+                    int ageMonth = today.Month - birthDate.Month;
+                    if (today.Day < birthDate.Day) ageMonth--;
+                    if (ageMonth < 0) { ageYear--; ageMonth += 12; }
+                    if (ageYear < 0) { throw new Exception("خطأ في الرقم القومي الخاص بك"); }
+
+                    int genderDigit = int.Parse(id.Substring(12, 1));
+                    string gender = (genderDigit % 2 == 0) ? "أنثى" : "ذكر";
+
+                    string govCode = id.Substring(7, 2);
+                    if (GetGovernorate(govCode) == "Error") { throw new Exception("خطأ في الرقم القومي الخاص بك"); }
+                    string governorate = GetGovernorate(govCode);
+
+                    return new string[] { birthDate.ToString("yyyy/MM/dd"), $"{ageYear} Year , {ageMonth} Month", gender, governorate };
+
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(e.Message, "خطأ في الرقم القومي", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return null;
+                }
+            }
+
+            return null;
         }
 
-        private void LoadData()
+        private static string GetGovernorate(string code)
+        {
+            string gov;
+            switch (code)
+            {
+                case "01": gov = "القاهرة"; break;
+                case "02": gov = "الأسكندرية"; break;
+                case "03": gov = "بورسعيد"; break;
+                case "04": gov = "السويس"; break;
+                case "11": gov = "دمياط"; break;
+                case "12": gov = "الدقهلية"; break;
+                case "13": gov = "الشرقية"; break;
+                case "14": gov = "القليوبية"; break;
+                case "15": gov = "كفر الشبخ"; break;
+                case "16": gov = "الغربية"; break;
+                case "17": gov = "المنوفية"; break;
+                case "18": gov = "البحيرة"; break;
+                case "19": gov = "الإسماعيلية"; break;
+                case "21": gov = "الجيزة"; break;
+                case "22": gov = "بني سويف"; break;
+                case "23": gov = "الفيوم"; break;
+                case "24": gov = "المنيا"; break;
+                case "25": gov = "أسيوط"; break;
+                case "26": gov = "سوهاج"; break;
+                case "27": gov = "قنا"; break;
+                case "28": gov = "أسوان"; break;
+                case "29": gov = "الأقصر"; break;
+                case "31": gov = "البحر الأحمر"; break;
+                case "32": gov = "الوادي الجديد"; break;
+                case "33": gov = "مطروح"; break;
+                case "34": gov = "شمال سيناء"; break;
+                case "35": gov = "جنوب سيناء"; break;
+                case "38": gov = "خارج الجمهورية"; break;
+                default: return "Error";
+            }
+            return gov;
+        }
+
+
+        private void RefreshBookingGrid()
         {
             try
             {
-                if (File.Exists(FileName))
-                {
-                    string json = File.ReadAllText(FileName);
-                    PatientsData = JsonSerializer.Deserialize<List<recordData>>(json) ?? new List<recordData>();
-                }
-                else
-                {
-                    PatientsData = new List<recordData>();
-                }
-            }
-            catch
-            {
-                PatientsData = new List<recordData>();
-            }
-        }
+                var allAppointments = manager.GetAllAppointments();
 
-        public void SaveData()
-        {
-            try
-            {
-                string json = JsonSerializer.Serialize(PatientsData, new JsonSerializerOptions { WriteIndented = true });
-                File.WriteAllText(FileName, json);
+                var myBookings = allAppointments
+                    .Where(a => a.DoctorID == account.id)
+                    .Select(a => new
+                    {
+                        اسم_المريض = a.FullName,
+                        الرقم_القومي = a.NationalID,
+                        الموبايل = a.PhoneNumber,
+                        التاريخ = a.AppointmentDate,
+                        الحالة = a.Status
+                    }).ToList();
+
+                dgvBooking.DataSource = myBookings;
+
+                if (dgvBooking.Columns.Count > 0)
+                    dgvBooking.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             }
             catch (Exception ex)
             {
-                System.Windows.Forms.MessageBox.Show("Error saving data: " + ex.Message);
+                MessageBox.Show("خطأ في تحميل الحجوزات: " + ex.Message);
             }
         }
 
-        public recordData GetPatientById(string nationalId)
+        private void dgvBooking_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (PatientsData == null) return null;
-            return PatientsData.FirstOrDefault(p => p.patients != null && p.patients.NationalID == nationalId);
-        }
-
-        public void AddOrUpdateVisit(string nationalId, string name, string phone, visit newVisit, CreatAccount doctorAccount)
-        {
-            var foundPatient = GetPatientById(nationalId);
-
-            if (foundPatient != null)
+            if (e.RowIndex >= 0)
             {
-                var foundDoctor = foundPatient.patients.Doctors.FirstOrDefault(d => d.NationalID == doctorAccount.id);
+                DataGridViewRow row = dgvBooking.Rows[e.RowIndex];
 
-                if (foundDoctor != null)
-                {
-                    foundDoctor.Visits.Add(newVisit);
-                }
-                else
-                {
-                    foundPatient.patients.Doctors.Add(CreateDoctorEntry(doctorAccount, newVisit));
-                }
+                txtName.Text = row.Cells["اسم_المريض"].Value.ToString();
+                txtNationalID_Add.Text = row.Cells["الرقم_القومي"].Value.ToString();
+                txtPhone.Text = row.Cells["الموبايل"].Value.ToString();
+
+                string patientID = row.Cells["الرقم_القومي"].Value.ToString();
+                manager.RemoveAppointment(patientID, account.id);
+
+                RefreshBookingGrid();
+
             }
-            else
-            {
-                var newRecord = new recordData
-                {
-                    patients = new patient
-                    {
-                        FullName = name,
-                        NationalID = nationalId,
-                        PhoneNumber = phone,
-                        Doctors = new List<doctor> { CreateDoctorEntry(doctorAccount, newVisit) }
-                    }
-                };
-                PatientsData.Add(newRecord);
-            }
-            SaveData();
-        }
-
-        private doctor CreateDoctorEntry(CreatAccount acc, visit v)
-        {
-            return new doctor
-            {
-                FullName = acc.info.name,
-                NationalID = acc.id,
-                PhoneNumber = acc.info.phone,
-                Specialty = acc.info.specialty,
-                ClinicName = acc.info.clinicName,
-                Visits = new List<visit> { v }
-            };
         }
     }
 }

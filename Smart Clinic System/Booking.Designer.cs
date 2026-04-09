@@ -28,14 +28,13 @@
         /// </summary>
         private void InitializeComponent()
         {
-            button1 = new Button();
-            dgvVisits = new DataGridView();
-            colDoctor = new DataGridViewTextBoxColumn();
-            colSpecialty = new DataGridViewTextBoxColumn();
+            BookingOk = new Button();
+            dgvDoctor = new DataGridView();
             txtPhone = new TextBox();
             pnlPatientInfo = new Panel();
             lblPatientTitle = new Label();
             lblName = new Label();
+            btnBack = new Button();
             txtName = new TextBox();
             lblNationalID = new Label();
             txtNationalID = new TextBox();
@@ -49,9 +48,9 @@
             txtGovernorate = new TextBox();
             lblPhone = new Label();
             grpVisits = new GroupBox();
-            btnRefresh = new Button();
-            btnBack = new Button();
             grpAddPatient = new GroupBox();
+            label3 = new Label();
+            DoctorPhone = new TextBox();
             label2 = new Label();
             Specialization = new TextBox();
             label1 = new Label();
@@ -60,53 +59,42 @@
             ClinicNumber = new TextBox();
             lblNextVisit = new Label();
             dtpNextVisit = new DateTimePicker();
-            label3 = new Label();
-            DoctorPhone = new TextBox();
-            ((System.ComponentModel.ISupportInitialize)dgvVisits).BeginInit();
+            groupBox1 = new GroupBox();
+            booked = new DataGridView();
+            ((System.ComponentModel.ISupportInitialize)dgvDoctor).BeginInit();
             pnlPatientInfo.SuspendLayout();
             grpVisits.SuspendLayout();
             grpAddPatient.SuspendLayout();
+            groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)booked).BeginInit();
             SuspendLayout();
             // 
-            // button1
+            // BookingOk
             // 
-            button1.BackColor = Color.FromArgb(0, 192, 0);
-            button1.Location = new Point(857, 53);
-            button1.Name = "button1";
-            button1.Size = new Size(93, 39);
-            button1.TabIndex = 15;
-            button1.Text = "حجز موعد";
-            button1.UseVisualStyleBackColor = false;
+            BookingOk.BackColor = Color.FromArgb(0, 192, 0);
+            BookingOk.Location = new Point(850, 31);
+            BookingOk.Name = "BookingOk";
+            BookingOk.Size = new Size(100, 39);
+            BookingOk.TabIndex = 15;
+            BookingOk.Text = "احجز الان";
+            BookingOk.UseVisualStyleBackColor = false;
+            BookingOk.Click += BookingOk_Click;
             // 
-            // dgvVisits
+            // dgvDoctor
             // 
-            dgvVisits.AllowUserToAddRows = false;
-            dgvVisits.AllowUserToDeleteRows = false;
-            dgvVisits.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            dgvVisits.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvVisits.Columns.AddRange(new DataGridViewColumn[] { colDoctor, colSpecialty });
-            dgvVisits.Location = new Point(11, 28);
-            dgvVisits.MultiSelect = false;
-            dgvVisits.Name = "dgvVisits";
-            dgvVisits.ReadOnly = true;
-            dgvVisits.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvVisits.Size = new Size(576, 380);
-            dgvVisits.TabIndex = 0;
-            dgvVisits.CellContentClick += dgvVisits_CellContentClick;
-            // 
-            // colDoctor
-            // 
-            colDoctor.FillWeight = 30F;
-            colDoctor.HeaderText = "الدكتور";
-            colDoctor.Name = "colDoctor";
-            colDoctor.ReadOnly = true;
-            // 
-            // colSpecialty
-            // 
-            colSpecialty.FillWeight = 25F;
-            colSpecialty.HeaderText = "التخصص";
-            colSpecialty.Name = "colSpecialty";
-            colSpecialty.ReadOnly = true;
+            dgvDoctor.AllowUserToAddRows = false;
+            dgvDoctor.AllowUserToDeleteRows = false;
+            dgvDoctor.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dgvDoctor.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvDoctor.Location = new Point(11, 28);
+            dgvDoctor.MultiSelect = false;
+            dgvDoctor.Name = "dgvDoctor";
+            dgvDoctor.ReadOnly = true;
+            dgvDoctor.RowHeadersVisible = false;
+            dgvDoctor.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgvDoctor.Size = new Size(576, 189);
+            dgvDoctor.TabIndex = 0;
+            dgvDoctor.CellDoubleClick += dgvDoctor_CellDoubleClick;
             // 
             // txtPhone
             // 
@@ -117,9 +105,10 @@
             // 
             // pnlPatientInfo
             // 
-            pnlPatientInfo.Controls.Add(button1);
+            pnlPatientInfo.Controls.Add(BookingOk);
             pnlPatientInfo.Controls.Add(lblPatientTitle);
             pnlPatientInfo.Controls.Add(lblName);
+            pnlPatientInfo.Controls.Add(btnBack);
             pnlPatientInfo.Controls.Add(txtName);
             pnlPatientInfo.Controls.Add(lblNationalID);
             pnlPatientInfo.Controls.Add(txtNationalID);
@@ -156,6 +145,15 @@
             lblName.Size = new Size(34, 15);
             lblName.TabIndex = 1;
             lblName.Text = "الاسم";
+            // 
+            // btnBack
+            // 
+            btnBack.FlatStyle = FlatStyle.Flat;
+            btnBack.Location = new Point(850, 74);
+            btnBack.Name = "btnBack";
+            btnBack.Size = new Size(100, 38);
+            btnBack.TabIndex = 9;
+            btnBack.Text = "العودة";
             // 
             // txtName
             // 
@@ -260,32 +258,14 @@
             // 
             // grpVisits
             // 
-            grpVisits.Controls.Add(dgvVisits);
+            grpVisits.Controls.Add(dgvDoctor);
             grpVisits.Font = new Font("Segoe UI", 10F);
             grpVisits.Location = new Point(5, 131);
             grpVisits.Name = "grpVisits";
-            grpVisits.Size = new Size(600, 420);
+            grpVisits.Size = new Size(600, 223);
             grpVisits.TabIndex = 6;
             grpVisits.TabStop = false;
-            grpVisits.Text = "سجل الزيارات";
-            // 
-            // btnRefresh
-            // 
-            btnRefresh.FlatStyle = FlatStyle.Flat;
-            btnRefresh.Location = new Point(763, 566);
-            btnRefresh.Name = "btnRefresh";
-            btnRefresh.Size = new Size(120, 38);
-            btnRefresh.TabIndex = 8;
-            btnRefresh.Text = "تحديث البيانات";
-            // 
-            // btnBack
-            // 
-            btnBack.FlatStyle = FlatStyle.Flat;
-            btnBack.Location = new Point(643, 566);
-            btnBack.Name = "btnBack";
-            btnBack.Size = new Size(100, 38);
-            btnBack.TabIndex = 9;
-            btnBack.Text = "العودة";
+            grpVisits.Text = "قائمة الاطباء المتاحين";
             // 
             // grpAddPatient
             // 
@@ -306,6 +286,23 @@
             grpAddPatient.TabIndex = 10;
             grpAddPatient.TabStop = false;
             grpAddPatient.Text = "إضافة مريض / تسجيل زيارة";
+            // 
+            // label3
+            // 
+            label3.AutoSize = true;
+            label3.Location = new Point(16, 286);
+            label3.Name = "label3";
+            label3.Size = new Size(72, 19);
+            label3.TabIndex = 24;
+            label3.Text = "رقم الهاتف";
+            // 
+            // DoctorPhone
+            // 
+            DoctorPhone.Location = new Point(29, 319);
+            DoctorPhone.Name = "DoctorPhone";
+            DoctorPhone.ReadOnly = true;
+            DoctorPhone.Size = new Size(280, 25);
+            DoctorPhone.TabIndex = 25;
             // 
             // label2
             // 
@@ -346,10 +343,9 @@
             label6.AutoSize = true;
             label6.Location = new Point(16, 204);
             label6.Name = "label6";
-            label6.Size = new Size(73, 19);
+            label6.Size = new Size(110, 19);
             label6.TabIndex = 12;
-            label6.Text = "رقم العياده";
-            label6.Click += label6_Click;
+            label6.Text = "اسم / رقم العياده";
             // 
             // ClinicNumber
             // 
@@ -377,48 +373,58 @@
             dtpNextVisit.Size = new Size(180, 25);
             dtpNextVisit.TabIndex = 21;
             // 
-            // label3
+            // groupBox1
             // 
-            label3.AutoSize = true;
-            label3.Location = new Point(16, 286);
-            label3.Name = "label3";
-            label3.Size = new Size(72, 19);
-            label3.TabIndex = 24;
-            label3.Text = "رقم الهاتف";
+            groupBox1.Controls.Add(booked);
+            groupBox1.Font = new Font("Segoe UI", 10F);
+            groupBox1.Location = new Point(5, 368);
+            groupBox1.Name = "groupBox1";
+            groupBox1.Size = new Size(600, 173);
+            groupBox1.TabIndex = 11;
+            groupBox1.TabStop = false;
+            groupBox1.Text = "قائمة الحجوزات المتاحة";
             // 
-            // DoctorPhone
+            // booked
             // 
-            DoctorPhone.Location = new Point(29, 319);
-            DoctorPhone.Name = "DoctorPhone";
-            DoctorPhone.ReadOnly = true;
-            DoctorPhone.Size = new Size(280, 25);
-            DoctorPhone.TabIndex = 25;
+            booked.AllowUserToAddRows = false;
+            booked.AllowUserToDeleteRows = false;
+            booked.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            booked.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            booked.Location = new Point(11, 30);
+            booked.MultiSelect = false;
+            booked.Name = "booked";
+            booked.ReadOnly = true;
+            booked.RowHeadersVisible = false;
+            booked.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            booked.Size = new Size(576, 137);
+            booked.TabIndex = 0;
             // 
             // Booking
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1012, 610);
+            ClientSize = new Size(960, 562);
+            Controls.Add(groupBox1);
             Controls.Add(grpAddPatient);
             Controls.Add(pnlPatientInfo);
             Controls.Add(grpVisits);
-            Controls.Add(btnRefresh);
-            Controls.Add(btnBack);
             Name = "Booking";
             Text = "Booking";
-            ((System.ComponentModel.ISupportInitialize)dgvVisits).EndInit();
+            ((System.ComponentModel.ISupportInitialize)dgvDoctor).EndInit();
             pnlPatientInfo.ResumeLayout(false);
             pnlPatientInfo.PerformLayout();
             grpVisits.ResumeLayout(false);
             grpAddPatient.ResumeLayout(false);
             grpAddPatient.PerformLayout();
+            groupBox1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)booked).EndInit();
             ResumeLayout(false);
         }
 
         #endregion
 
-        private Button button1;
-        private DataGridView dgvVisits;
+        private Button BookingOk;
+        private DataGridView dgvDoctor;
         private TextBox txtPhone;
         private Panel pnlPatientInfo;
         private Label lblPatientTitle;
@@ -436,10 +442,7 @@
         private TextBox txtGovernorate;
         private Label lblPhone;
         private GroupBox grpVisits;
-        private Button btnRefresh;
         private Button btnBack;
-        private DataGridViewTextBoxColumn colDoctor;
-        private DataGridViewTextBoxColumn colSpecialty;
         private GroupBox grpAddPatient;
         private Label label1;
         private TextBox DoctorName;
@@ -451,5 +454,7 @@
         private DateTimePicker dtpNextVisit;
         private Label label3;
         private TextBox DoctorPhone;
+        private GroupBox groupBox1;
+        private DataGridView booked;
     }
 }

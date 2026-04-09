@@ -45,8 +45,6 @@
             txtTreatment = new TextBox();
             lblReports = new Label();
             txtReports = new TextBox();
-            lblNextVisit = new Label();
-            dtpNextVisit = new DateTimePicker();
             btnAddPatient = new Button();
             grpFollow = new GroupBox();
             lblNationalID_Follow = new Label();
@@ -58,7 +56,7 @@
             txtNationalID_Delete = new MaskedTextBox();
             btnDeletePatient = new Button();
             grpPatientsList = new GroupBox();
-            dgvPatients = new DataGridView();
+            dgvBooking = new DataGridView();
             btnRefreshPatients = new Button();
             lblTitle = new Label();
             lblDoctorName = new Label();
@@ -68,7 +66,7 @@
             ((System.ComponentModel.ISupportInitialize)dgvVisits).BeginInit();
             grpDelete.SuspendLayout();
             grpPatientsList.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)dgvPatients).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)dgvBooking).BeginInit();
             SuspendLayout();
             // 
             // grpAddPatient
@@ -94,8 +92,6 @@
             grpAddPatient.Controls.Add(txtTreatment);
             grpAddPatient.Controls.Add(lblReports);
             grpAddPatient.Controls.Add(txtReports);
-            grpAddPatient.Controls.Add(lblNextVisit);
-            grpAddPatient.Controls.Add(dtpNextVisit);
             grpAddPatient.Controls.Add(btnAddPatient);
             grpAddPatient.Font = new Font("Segoe UI", 10F);
             grpAddPatient.Location = new Point(20, 60);
@@ -111,7 +107,7 @@
             button1.FlatStyle = FlatStyle.Flat;
             button1.Font = new Font("Segoe UI", 8F);
             button1.ForeColor = Color.White;
-            button1.Location = new Point(288, 388);
+            button1.Location = new Point(154, 388);
             button1.Name = "button1";
             button1.Size = new Size(80, 36);
             button1.TabIndex = 23;
@@ -152,6 +148,7 @@
             txtNationalID_Add.Size = new Size(280, 25);
             txtNationalID_Add.TabIndex = 3;
             txtNationalID_Add.ValidatingType = typeof(int);
+            txtNationalID_Add.TextChanged += txtNationalID_Add_TextChanged;
             // 
             // lblDOB
             // 
@@ -218,7 +215,7 @@
             txtAge.Location = new Point(180, 202);
             txtAge.Name = "txtAge";
             txtAge.ReadOnly = true;
-            txtAge.Size = new Size(120, 25);
+            txtAge.Size = new Size(151, 25);
             txtAge.TabIndex = 11;
             // 
             // lblPhone
@@ -286,29 +283,12 @@
             txtReports.Size = new Size(280, 40);
             txtReports.TabIndex = 19;
             // 
-            // lblNextVisit
-            // 
-            lblNextVisit.AutoSize = true;
-            lblNextVisit.Location = new Point(20, 395);
-            lblNextVisit.Name = "lblNextVisit";
-            lblNextVisit.Size = new Size(80, 19);
-            lblNextVisit.TabIndex = 20;
-            lblNextVisit.Text = "موعد الزيارة";
-            // 
-            // dtpNextVisit
-            // 
-            dtpNextVisit.Format = DateTimePickerFormat.Short;
-            dtpNextVisit.Location = new Point(102, 392);
-            dtpNextVisit.Name = "dtpNextVisit";
-            dtpNextVisit.Size = new Size(180, 25);
-            dtpNextVisit.TabIndex = 21;
-            // 
             // btnAddPatient
             // 
             btnAddPatient.BackColor = Color.FromArgb(10, 120, 210);
             btnAddPatient.FlatStyle = FlatStyle.Flat;
             btnAddPatient.ForeColor = Color.White;
-            btnAddPatient.Location = new Point(380, 392);
+            btnAddPatient.Location = new Point(246, 392);
             btnAddPatient.Name = "btnAddPatient";
             btnAddPatient.Size = new Size(80, 30);
             btnAddPatient.TabIndex = 22;
@@ -445,7 +425,7 @@
             // 
             // grpPatientsList
             // 
-            grpPatientsList.Controls.Add(dgvPatients);
+            grpPatientsList.Controls.Add(dgvBooking);
             grpPatientsList.Controls.Add(btnRefreshPatients);
             grpPatientsList.Font = new Font("Segoe UI", 10F);
             grpPatientsList.Location = new Point(20, 503);
@@ -455,28 +435,29 @@
             grpPatientsList.TabStop = false;
             grpPatientsList.Text = "الحجوزات المتاحة";
             // 
-            // dgvPatients
+            // dgvBooking
             // 
-            dgvPatients.AllowUserToAddRows = false;
-            dgvPatients.AllowUserToDeleteRows = false;
-            dgvPatients.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            dgvPatients.ColumnHeadersHeight = 29;
-            dgvPatients.Location = new Point(12, 23);
-            dgvPatients.Name = "dgvPatients";
-            dgvPatients.ReadOnly = true;
-            dgvPatients.RowHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
+            dgvBooking.AllowUserToAddRows = false;
+            dgvBooking.AllowUserToDeleteRows = false;
+            dgvBooking.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dgvBooking.ColumnHeadersHeight = 29;
+            dgvBooking.Location = new Point(12, 23);
+            dgvBooking.Name = "dgvBooking";
+            dgvBooking.ReadOnly = true;
+            dgvBooking.RowHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
             dataGridViewCellStyle5.BackColor = SystemColors.Control;
             dataGridViewCellStyle5.Font = new Font("Segoe UI", 10F);
             dataGridViewCellStyle5.ForeColor = SystemColors.WindowText;
             dataGridViewCellStyle5.SelectionBackColor = SystemColors.Highlight;
             dataGridViewCellStyle5.SelectionForeColor = SystemColors.HighlightText;
             dataGridViewCellStyle5.WrapMode = DataGridViewTriState.True;
-            dgvPatients.RowHeadersDefaultCellStyle = dataGridViewCellStyle5;
-            dgvPatients.RowHeadersVisible = false;
-            dgvPatients.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.AutoSizeToFirstHeader;
-            dgvPatients.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvPatients.Size = new Size(920, 120);
-            dgvPatients.TabIndex = 0;
+            dgvBooking.RowHeadersDefaultCellStyle = dataGridViewCellStyle5;
+            dgvBooking.RowHeadersVisible = false;
+            dgvBooking.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.AutoSizeToFirstHeader;
+            dgvBooking.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgvBooking.Size = new Size(920, 120);
+            dgvBooking.TabIndex = 0;
+            dgvBooking.CellDoubleClick += dgvBooking_CellDoubleClick;
             // 
             // btnRefreshPatients
             // 
@@ -550,7 +531,7 @@
             grpDelete.ResumeLayout(false);
             grpDelete.PerformLayout();
             grpPatientsList.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)dgvPatients).EndInit();
+            ((System.ComponentModel.ISupportInitialize)dgvBooking).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -589,9 +570,6 @@
         private Label lblReports;
         private TextBox txtReports;
 
-        private Label lblNextVisit;
-        private DateTimePicker dtpNextVisit;
-
         private Button btnAddPatient;
 
         private GroupBox grpFollow;
@@ -606,7 +584,7 @@
         private Button btnDeletePatient;
 
         private GroupBox grpPatientsList;
-        private DataGridView dgvPatients;
+        private DataGridView dgvBooking;
         private Button btnRefreshPatients;
 
         private Label lblTitle;

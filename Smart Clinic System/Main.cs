@@ -31,19 +31,24 @@ namespace Smart_Clinic_System
             this.Close();
         }
 
+        private void Administrator_Click(object sender, EventArgs e)
+        {
+            Administrator go = new Administrator();
+            go.Show();
+            this.Close();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            new pharmacist().Show(); this.Close();
+        }
+
         private void Main_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (Application.OpenForms.Count == 2)
             {
                 Application.Exit();
             }
-        }
-
-        private void Administrator_Click(object sender, EventArgs e)
-        {
-            Administrator go = new Administrator();
-            go.Show();
-            this.Close();
         }
     }
 }

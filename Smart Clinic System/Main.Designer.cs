@@ -25,6 +25,7 @@
             imageList1 = new ImageList(components);
             btnPatient = new Button();
             Administrator = new Button();
+            button1 = new Button();
             SuspendLayout();
             // 
             // titleLabel
@@ -114,7 +115,7 @@
             Administrator.ImageIndex = 3;
             Administrator.ImageList = imageList1;
             Administrator.ImeMode = ImeMode.NoControl;
-            Administrator.Location = new Point(143, 252);
+            Administrator.Location = new Point(36, 255);
             Administrator.Name = "Administrator";
             Administrator.Size = new Size(188, 60);
             Administrator.TabIndex = 8;
@@ -123,6 +124,26 @@
             Administrator.UseVisualStyleBackColor = false;
             Administrator.Click += Administrator_Click;
             // 
+            // button1
+            // 
+            button1.BackColor = Color.Cyan;
+            button1.FlatAppearance.BorderSize = 0;
+            button1.FlatStyle = FlatStyle.Flat;
+            button1.Font = new Font("Segoe UI", 12F, FontStyle.Bold);
+            button1.ForeColor = Color.White;
+            button1.ImageAlign = ContentAlignment.TopCenter;
+            button1.ImageIndex = 3;
+            button1.ImageList = imageList1;
+            button1.ImeMode = ImeMode.NoControl;
+            button1.Location = new Point(247, 255);
+            button1.Name = "button1";
+            button1.Size = new Size(188, 60);
+            button1.TabIndex = 9;
+            button1.Text = "صيدلي";
+            button1.TextAlign = ContentAlignment.BottomCenter;
+            button1.UseVisualStyleBackColor = false;
+            button1.Click += button1_Click;
+            // 
             // Main
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -130,6 +151,7 @@
             BackColor = Color.FromArgb(240, 242, 245);
             BackgroundImage = (Image)resources.GetObject("$this.BackgroundImage");
             ClientSize = new Size(470, 327);
+            Controls.Add(button1);
             Controls.Add(Administrator);
             Controls.Add(titleLabel);
             Controls.Add(subTitleLabel);
@@ -155,5 +177,6 @@
         private Button btnPatient;
         private ImageList imageList1;
         private Button Administrator;
+        private Button button1;
     }
 }
