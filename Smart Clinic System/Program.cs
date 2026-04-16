@@ -1,4 +1,4 @@
-namespace Smart_Clinic_System
+namespace UnifiedHealthcareSystem
 {
     internal static class Program
     {

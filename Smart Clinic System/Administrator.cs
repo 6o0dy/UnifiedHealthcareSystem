@@ -9,7 +9,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Smart_Clinic_System
+namespace UnifiedHealthcareSystem
 {
     public partial class Administrator : Form
     {
@@ -21,85 +21,39 @@ namespace Smart_Clinic_System
 
         private void btnRegister_Click(object sender, EventArgs e)
         {
-            // انشاء كائن جديد من نوع CreatAccount ويتم تمرير البيانات المدخله من خلاله ليتم فحصها
-            CreatAccount account = new CreatAccount
-            {
-                id = txtID.Text,
-                email = txtEmail.Text,
-                username = txtUserNew.Text,
-                info = new Info
-                {
-                    name = txtName.Text,
-                    phone = txtPhone.Text,
-                    clinicName = txtClinic.Text,
-                    specialty = txtSpec.Text,
-                    password = txtPassNew.Text
-                }
-            };
+            //يتم ارسال البيانات الي الكلاس المسؤول عن فحص البيانات وكتابتها في ملف ال json اذا كانت البيانات صحيحة
+            string name = txtName.Text, email = txtEmail.Text, phone = txtPhone.Text, clinic = txtClinic.Text,
+                spec = txtSpec.Text, pass = txtPassNew.Text, id = txtID.Text, user = txtUserNew.Text;
 
-            // يتم فحص البيانات المدخلة من خلال ميثود ValidateData وفي حالة كانت صحيحة يتم اضافة الحساب الجديد الي ملف جيسون الخاص بالحسابات
-            if (ValidateData())
-            {
-                GetAccountsFromFile all = new GetAccountsFromFile();
+            new SetAccountToFile(ref id, ref email, ref user, ref name, ref phone, ref clinic, ref spec, ref pass);
 
-                CreatAccount[] allAccounts = all.AllAccounts();
-                Array.Resize(ref allAccounts, allAccounts.Length + 1);
-                allAccounts[allAccounts.Length - 1] = account;
-
-                string updatedJson = JsonSerializer.Serialize(allAccounts, new JsonSerializerOptions { WriteIndented = true });
-                File.WriteAllText("DoctorAccount.json", updatedJson);
-
-                MessageBox.Show("تم انشاء الحساب بنجاح!");
-            }
-        }
-
-        // ميثود لعرض الاخطاء التي حدثت في عملية انشاء الحساب
-        private bool ValidateData()
-        {
-            bool isValid = true;
-            string error = "";
-            for (int i = 0; i < CreatAccount.Check.Length; i++)
-            {
-                string errorMessage = i switch
-                {
-                    0 => "لقب المستخدم لازم علي الاقل 4 حروف",
-                    1 => "الرقم القومي لازم يكون 14 رقم",
-                    2 => "رقم الهاتف لازم يكون 11 رقم",
-                    3 => "التخصص لازم علي الاقل 5 حروف",
-                    4 => "اسم العيادة لازم علي الاقل 5 حروف",
-                    5 => "الايميل لازم يحتوي في الاخر علي '@gmail.com'.",
-                    6 => "اسم المستخدم لازم يكون علي الاقل 4 حروف",
-                    7 => "الباسورد يجب ان لا يقل عن 6 ارقام او حروف",
-                    _ => $"Field {i + 1} is invalid."
-                };
-                if (CreatAccount.Check[i] == 'F')
-                {
-                    error += errorMessage + "\n";
-                    isValid = false;
-                }
-                if (!isValid && i == CreatAccount.Check.Length - 1)
-                {
-                    MessageBox.Show(error);
-                    return isValid;
-                }
-            }
-            return isValid;
-        }
-        //ــــــــــــــــــــــــــــــــــــــــــــــــ
-
-        private void Administrator_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            if (Application.OpenForms.Count == 2)
-            {
-                Application.Exit();
-            }
+            txtID.Text = id; txtEmail.Text = email; txtUserNew.Text = user; txtName.Text = name;
+            txtPhone.Text = phone; txtClinic.Text = clinic; txtSpec.Text = spec; txtPassNew.Text = pass;
         }
 
         private void btnCreateBack_Click(object sender, EventArgs e)
         {
-            Main f1 = new Main();
-            f1.Show();
+            new Main().Show();
             this.Close();
+        }
+
+        private void Administrator_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (Application.OpenForms.Count == 2) Application.Exit();
+        }
+
+        //============================================
+
+        private void btnRegister_Paint(object sender, PaintEventArgs e)
+        {
+            System.Drawing.Drawing2D.GraphicsPath path = new System.Drawing.Drawing2D.GraphicsPath();
+            int radius = 20; // كل ما زودت الرقم ده، الزرار بقى دائري أكتر
+            path.AddArc(0, 0, radius, radius, 180, 90);
+            path.AddArc(btnRegister.Width - radius, 0, radius, radius, 270, 90);
+            path.AddArc(btnRegister.Width - radius, btnRegister.Height - radius, radius, radius, 0, 90);
+            path.AddArc(0, btnRegister.Height - radius, radius, radius, 90, 90);
+            path.CloseAllFigures();
+            btnRegister.Region = new Region(path);
         }
     }
 }

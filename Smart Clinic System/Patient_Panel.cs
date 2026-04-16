@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Smart_Clinic_System
+namespace UnifiedHealthcareSystem
 {
     public partial class Patient_Panel : Form
     {
@@ -21,24 +22,21 @@ namespace Smart_Clinic_System
 
         private void btnBack_Click(object sender, EventArgs e)
         {
-            Main f1 = new Main();
-            f1.Show();
+            new Main().Show();
             this.Close();
         }
 
         private void btnRefresh_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("تم تحديث القائمة.");
+            MessageBox.Show("تم تحديث القائمة.", "تحديث", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void Patient_Panel_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (Application.OpenForms.Count == 2)
-            {
-                Application.Exit();
-            }
+            if (Application.OpenForms.Count == 2) Application.Exit();
         }
 
+        // دالة لقراءة معلومات المريض وعرضها في الواجهة
         private void ReadMyInfo(string id)
         {
             PatientManager Data = new PatientManager();
@@ -98,6 +96,7 @@ namespace Smart_Clinic_System
             }
         }
 
+        // دالة لعرض تفاصيل الزيارة المحددة في الحقول المتاحة
         private void dgvVisits_SelectionChanged(object sender, EventArgs e)
         {
             if (dgvVisits.SelectedRows.Count > 0)
@@ -110,13 +109,34 @@ namespace Smart_Clinic_System
             }
         }
 
+        // عند الضغط على زر الحجز، يتم فتح نافذة الحجز مع تمرير بيانات المريض إذا كانت متاحة، أو تمرير البيانات المدخلة في الحقول إذا لم يكن المريض مسجلاً
         private void Booking_Click(object sender, EventArgs e)
         {
-            string[] s = new string[3];
-            if (MyInfo != null) s = [MyInfo.patients.FullName, MyInfo.patients.NationalID, MyInfo.patients.PhoneNumber];
-            else s[1] = txtNationalID.Text;
+            string[] s;
+            if (MyInfo != null) s = new string[] { MyInfo.patients.FullName, MyInfo.patients.NationalID, MyInfo.patients.PhoneNumber };
+            else s = new string[] { "", txtNationalID.Text, "" };
 
-            Booking PD = new Booking(s); PD.ShowDialog();
+            new Booking(s).ShowDialog();
+        }
+
+        //================================================================================================================================
+        private void Patient_Panel_Load(object sender, EventArgs e)
+        {
+            // استدعاء دالة الرسم لكل زرار مع تحديد نصف قطر الانحناء
+            SetRoundedRegion(btnRefresh, 20);
+            SetRoundedRegion(btnBack, 20);
+            SetRoundedRegion(booking, 20);
+        }
+        private void SetRoundedRegion(Control control, int radius)
+        {
+            GraphicsPath path = new GraphicsPath();
+            path.StartFigure();
+            path.AddArc(0, 0, radius, radius, 180, 90);
+            path.AddArc(control.Width - radius, 0, radius, radius, 270, 90);
+            path.AddArc(control.Width - radius, control.Height - radius, radius, radius, 0, 90);
+            path.AddArc(0, control.Height - radius, radius, radius, 90, 90);
+            path.CloseFigure();
+            control.Region = new Region(path);
         }
     }
 }

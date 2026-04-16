@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Security.Principal;
 using System.Text.Json;
 using System.Windows.Forms;
 
-namespace Smart_Clinic_System
+namespace UnifiedHealthcareSystem
 {
     public partial class Doctor_Panel : Form
     {
@@ -24,11 +25,12 @@ namespace Smart_Clinic_System
             RefreshBookingGrid();
         }
 
+        // عند الضغط علي زر إضافة زيارة جديدة يتم التحقق من إدخال اسم المريض والرقم القومي، ثم يتم إنشاء زيارة جديدة وإضافتها إلى سجل المريض باستخدام ميثود AddOrUpdateVisit في PatientManager. بعد ذلك يتم تحديث قائمة المرضى وعرض رسالة نجاح.
         private void btnAddPatient_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(txtNationalID_Add.Text) || string.IsNullOrWhiteSpace(txtName.Text))
             {
-                MessageBox.Show("Please enter Patient Name and National ID.");
+                MessageBox.Show("Please enter Patient Name and National ID.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
             try
@@ -48,9 +50,12 @@ namespace Smart_Clinic_System
                 ClearInputs();
                 RefreshMyPatients();
             }
-            catch (Exception error) { MessageBox.Show(error.Message, "بيانات غير صحيحة", MessageBoxButtons.OK, MessageBoxIcon.Warning); }
+            catch (Exception error) { MessageBox.Show(error.Message, "Incorrect Data", MessageBoxButtons.OK, MessageBoxIcon.Warning); }
         }
 
+        // عند الضغط علي زر البحث عن زيارات سابقة يتم التحقق من إدخال الرقم القومي، ثم يتم البحث عن سجل المريض باستخدام ميثود GetPatientById في PatientManager.
+        // إذا تم العثور على السجل وكان الطبيب الحالي مسجلاً كطبيب للمريض، يتم عرض معلومات المريض في DataGridView.
+        // إذا لم يكن هناك زيارات سابقة أو لم يتم العثور على المريض، يتم عرض رسالة مناسبة.
         private void btnSearchFollow_Click(object sender, EventArgs e)
         {
             string searchID = txtNationalID_Search.Text;
@@ -71,16 +76,19 @@ namespace Smart_Clinic_System
                 else
                 {
                     dgvVisits.DataSource = new List<object>();
-                    MessageBox.Show("You have no previous visits recorded for this patient.");
+                    MessageBox.Show("You have no previous visits recorded for this patient.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
             else
             {
                 dgvVisits.DataSource = new List<object>();
-                MessageBox.Show("Patient not found in the system.");
+                MessageBox.Show("Patient not found in the system.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
+        // عند النقر المزدوج على صف في DataGridView
+        // الخاص بالزيارات، يتم استخراج الرقم القومي للمريض من الصف المحدد، ثم يتم استدعاء ميثود GetPatientById في PatientManager
+        // للحصول على بيانات المريض. إذا تم العثور على البيانات، يتم عرض اسم المريض والرقم القومي ورقم الهاتف في الحقول النصية المناسبة.
         private void dgvVisits_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0)
@@ -98,7 +106,9 @@ namespace Smart_Clinic_System
             }
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        // عند الضغط على زر عرض التقارير، يتم التحقق من إدخال الرقم القومي في الحقل المناسب، ثم يتم استدعاء ميثود GetPatientById في PatientManager
+        // للحصول على بيانات المريض. إذا تم العثور على البيانات، يتم إنشاء نموذج جديد من نوع PatientDetails.
+        private void ShowRebort_Click(object sender, EventArgs e)
         {
             string selectedID = txtNationalID_Add.Text;
             var patientData = manager.GetPatientById(selectedID);
@@ -108,12 +118,11 @@ namespace Smart_Clinic_System
                 PatientDetails detailsForm = new PatientDetails(patientData, account);
                 detailsForm.ShowDialog();
             }
-            else
-            {
-                MessageBox.Show("Please search for or select a patient first to view full history.");
-            }
+            else MessageBox.Show("Please search for or select a patient first to view full history.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
+        // عند تغيير النص في حقل الرقم القومي الخاص بإضافة زيارة جديدة، يتم تحليل الرقم القومي باستخدام ميثود AnalyzeID.
+        // إذا تم التحليل بنجاح، يتم ملء حقول تاريخ الميلاد والعمر والجنس والمحافظة بناءً على البيانات المستخرجة من الرقم القومي. إذا كان هناك خطأ في الرقم القومي، يتم عرض رسالة خطأ مناسبة.
         private void txtNationalID_Add_TextChanged(object sender, EventArgs e)
         {
             txtDOB.Clear();
@@ -132,9 +141,11 @@ namespace Smart_Clinic_System
                     txtGovernorate.Text = analyzedID[3];
                 }
             }
-            catch (Exception err) { MessageBox.Show(err.Message, "خطأ قي الرقم القومي", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+            catch (Exception err) { MessageBox.Show(err.Message, "National ID Number Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
         }
 
+        // دالة لتحديث قائمة المرضى الذين يتعامل معهم الطبيب الحالي في DataGridView.
+        // يتم جلب بيانات المرضى من PatientManager، ثم يتم تصفية المرضى الذين لديهم الطبيب الحالي كجزء من سجلهم الطبي وعرض أسمائهم وأرقامهم القومية وأرقام هواتفهم في DataGridView.
         private void RefreshMyPatients()
         {
             var myPatients = manager.PatientsData
@@ -161,25 +172,19 @@ namespace Smart_Clinic_System
 
         private void btnLogout_Click(object sender, EventArgs e)
         {
-            Main f1 = new Main();
-            f1.Show();
+            new Main().Show();
             this.Close();
         }
 
         private void Doctor_Panel_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (Application.OpenForms.Count == 2)
-            {
-                Application.Exit();
-            }
+            if (Application.OpenForms.Count == 2) Application.Exit();
         }
 
+        // دالة لتحليل الرقم القومي واستخراج تاريخ الميلاد والعمر والجنس والمحافظة. يتم التحقق من صحة الرقم القومي بناءً على طوله ومحتوياته، ثم يتم حساب البيانات المطلوبة وإرجاعها في مصفوفة من السلاسل النصية.
         public static string[] AnalyzeID(string id)
         {
-            if (string.IsNullOrEmpty(id))
-            {
-                return null;
-            }
+            if (string.IsNullOrEmpty(id)) return null;
 
             if (id.Length == 14)
             {
@@ -190,7 +195,7 @@ namespace Smart_Clinic_System
                     string month = id.Substring(3, 2);
                     string day = id.Substring(5, 2);
 
-                    if (!(centuryCode == "2" || centuryCode == "3")) { throw new Exception("خطأ في الرقم القومي الخاص بك"); }
+                    if (!(centuryCode == "2" || centuryCode == "3")) throw new Exception("خطأ في الرقم القومي الخاص بك");
                     string fullYear = (centuryCode == "2" ? "19" : "20") + year;
                     DateTime birthDate = new DateTime(int.Parse(fullYear), int.Parse(month), int.Parse(day));
 
@@ -198,14 +203,14 @@ namespace Smart_Clinic_System
                     int ageYear = today.Year - birthDate.Year;
                     int ageMonth = today.Month - birthDate.Month;
                     if (today.Day < birthDate.Day) ageMonth--;
-                    if (ageMonth < 0) { ageYear--; ageMonth += 12; }
-                    if (ageYear < 0) { throw new Exception("خطأ في الرقم القومي الخاص بك"); }
+                    if (ageMonth < 0) ageYear--; ageMonth += 12;
+                    if (ageYear < 0) throw new Exception("خطأ في الرقم القومي الخاص بك");
 
                     int genderDigit = int.Parse(id.Substring(12, 1));
                     string gender = (genderDigit % 2 == 0) ? "أنثى" : "ذكر";
 
                     string govCode = id.Substring(7, 2);
-                    if (GetGovernorate(govCode) == "Error") { throw new Exception("خطأ في الرقم القومي الخاص بك"); }
+                    if (GetGovernorate(govCode) == "Error") throw new Exception("خطأ في الرقم القومي الخاص بك");
                     string governorate = GetGovernorate(govCode);
 
                     return new string[] { birthDate.ToString("yyyy/MM/dd"), $"{ageYear} Year , {ageMonth} Month", gender, governorate };
@@ -221,6 +226,7 @@ namespace Smart_Clinic_System
             return null;
         }
 
+        // دالة للحصول علي المحافظة من خلال الكود اللي موجود في الرقم القومي
         private static string GetGovernorate(string code)
         {
             string gov;
@@ -259,7 +265,7 @@ namespace Smart_Clinic_System
             return gov;
         }
 
-
+        // دالة لتحديث DataGridView الخاص بالحجوزات، حيث يتم جلب جميع الحجوزات من PatientManager، ثم يتم تصفية الحجوزات التي تخص الطبيب الحالي وعرض بيانات المريض والتاريخ والحالة في DataGridView.
         private void RefreshBookingGrid()
         {
             try
@@ -284,7 +290,7 @@ namespace Smart_Clinic_System
             }
             catch (Exception ex)
             {
-                MessageBox.Show("خطأ في تحميل الحجوزات: " + ex.Message);
+                MessageBox.Show("خطأ في تحميل الحجوزات: " + ex.Message, "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -304,6 +310,29 @@ namespace Smart_Clinic_System
                 RefreshBookingGrid();
 
             }
+        }
+
+
+        //====================================================================
+        private void Doctor_Panel_Load(object sender, EventArgs e)
+        {
+            // استدعاء دالة الرسم لكل زرار مع تحديد نصف قطر الانحناء
+            SetRoundedRegion(btnAddPatient, 20);
+            SetRoundedRegion(ShowRebort, 20);
+            SetRoundedRegion(btnDeletePatient, 20);
+            SetRoundedRegion(btnLogout, 20);
+            SetRoundedRegion(btnSearchFollow, 20);
+        }
+        private void SetRoundedRegion(Control control, int radius)
+        {
+            GraphicsPath path = new GraphicsPath();
+            path.StartFigure();
+            path.AddArc(0, 0, radius, radius, 180, 90);
+            path.AddArc(control.Width - radius, 0, radius, radius, 270, 90);
+            path.AddArc(control.Width - radius, control.Height - radius, radius, radius, 0, 90);
+            path.AddArc(0, control.Height - radius, radius, radius, 90, 90);
+            path.CloseFigure();
+            control.Region = new Region(path);
         }
     }
 }

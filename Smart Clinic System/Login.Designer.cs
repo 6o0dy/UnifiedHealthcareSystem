@@ -1,20 +1,8 @@
-﻿namespace Smart_Clinic_System
+﻿namespace UnifiedHealthcareSystem
 {
     partial class Login
     {
         private System.ComponentModel.IContainer components = null;
-
-        // Panels
-        private Panel panelLogin;
-
-        // Login controls
-        private Label titleLogin;
-        private Label labelUser;
-        private Label labelPass;
-        private TextBox txtUsername;
-        private TextBox txtPassword;
-        private Button btnLogin;
-        private Button btnBack;
 
         protected override void Dispose(bool disposing)
         {
@@ -29,7 +17,7 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Login));
             panelLogin = new Panel();
-            ResetPassword = new Button();
+            ResetPassword = new LinkLabel();
             titleLogin = new Label();
             labelUser = new Label();
             txtUsername = new TextBox();
@@ -51,36 +39,33 @@
             panelLogin.Controls.Add(txtPassword);
             panelLogin.Controls.Add(btnLogin);
             panelLogin.Controls.Add(btnBack);
+            panelLogin.Dock = DockStyle.Fill;
             panelLogin.Location = new Point(0, 0);
             panelLogin.Margin = new Padding(3, 4, 3, 4);
             panelLogin.Name = "panelLogin";
             panelLogin.Size = new Size(479, 438);
-            panelLogin.TabIndex = 0;
+            panelLogin.TabIndex = 1;
             // 
             // ResetPassword
             // 
-            ResetPassword.BackColor = Color.Red;
-            ResetPassword.FlatAppearance.BorderSize = 0;
-            ResetPassword.FlatStyle = FlatStyle.Flat;
-            ResetPassword.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            ResetPassword.ForeColor = Color.White;
-            ResetPassword.Location = new Point(160, 383);
-            ResetPassword.Margin = new Padding(3, 4, 3, 4);
+            ResetPassword.AutoSize = true;
+            ResetPassword.LinkColor = Color.DarkBlue;
+            ResetPassword.Location = new Point(195, 362);
             ResetPassword.Name = "ResetPassword";
-            ResetPassword.Size = new Size(160, 34);
+            ResetPassword.Size = new Size(96, 15);
             ResetPassword.TabIndex = 6;
-            ResetPassword.Text = "Reset Password";
-            ResetPassword.UseVisualStyleBackColor = false;
-            ResetPassword.Click += ResetPassword_Click;
+            ResetPassword.TabStop = true;
+            ResetPassword.Text = "Reset Password ?";
+            ResetPassword.LinkClicked += ResetPassword_LinkClicked;
             // 
             // titleLogin
             // 
             titleLogin.AutoSize = true;
-            titleLogin.Font = new Font("Segoe UI", 22F, FontStyle.Bold);
-            titleLogin.ForeColor = Color.FromArgb(0, 120, 215);
-            titleLogin.Location = new Point(114, 45);
+            titleLogin.Font = new Font("Showcard Gothic", 21.75F, FontStyle.Bold | FontStyle.Italic, GraphicsUnit.Point, 0);
+            titleLogin.ForeColor = Color.DarkBlue;
+            titleLogin.Location = new Point(118, 79);
             titleLogin.Name = "titleLogin";
-            titleLogin.Size = new Size(201, 41);
+            titleLogin.Size = new Size(239, 36);
             titleLogin.TabIndex = 0;
             titleLogin.Text = "Doctor Login";
             // 
@@ -88,7 +73,7 @@
             // 
             labelUser.AutoSize = true;
             labelUser.Font = new Font("Segoe UI", 9F);
-            labelUser.Location = new Point(69, 125);
+            labelUser.Location = new Point(69, 135);
             labelUser.Name = "labelUser";
             labelUser.Size = new Size(134, 15);
             labelUser.TabIndex = 1;
@@ -96,18 +81,18 @@
             // 
             // txtUsername
             // 
-            txtUsername.Font = new Font("Segoe UI", 10F);
-            txtUsername.Location = new Point(69, 158);
+            txtUsername.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            txtUsername.Location = new Point(69, 159);
             txtUsername.Margin = new Padding(3, 4, 3, 4);
             txtUsername.Name = "txtUsername";
-            txtUsername.Size = new Size(342, 25);
+            txtUsername.Size = new Size(342, 29);
             txtUsername.TabIndex = 0;
             // 
             // labelPass
             // 
             labelPass.AutoSize = true;
             labelPass.Font = new Font("Segoe UI", 9F);
-            labelPass.Location = new Point(69, 212);
+            labelPass.Location = new Point(69, 221);
             labelPass.Name = "labelPass";
             labelPass.Size = new Size(57, 15);
             labelPass.TabIndex = 2;
@@ -115,25 +100,25 @@
             // 
             // txtPassword
             // 
-            txtPassword.Font = new Font("Segoe UI", 10F);
-            txtPassword.Location = new Point(69, 245);
+            txtPassword.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            txtPassword.Location = new Point(69, 246);
             txtPassword.Margin = new Padding(3, 4, 3, 4);
             txtPassword.Name = "txtPassword";
-            txtPassword.Size = new Size(342, 25);
+            txtPassword.Size = new Size(342, 29);
             txtPassword.TabIndex = 1;
             txtPassword.UseSystemPasswordChar = true;
             // 
             // btnLogin
             // 
-            btnLogin.BackColor = Color.FromArgb(0, 120, 215);
+            btnLogin.BackColor = Color.DarkBlue;
             btnLogin.FlatAppearance.BorderSize = 0;
             btnLogin.FlatStyle = FlatStyle.Flat;
             btnLogin.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btnLogin.ForeColor = Color.White;
-            btnLogin.Location = new Point(111, 306);
+            btnLogin.Location = new Point(69, 302);
             btnLogin.Margin = new Padding(3, 4, 3, 4);
             btnLogin.Name = "btnLogin";
-            btnLogin.Size = new Size(251, 53);
+            btnLogin.Size = new Size(342, 45);
             btnLogin.TabIndex = 2;
             btnLogin.Text = "Login";
             btnLogin.UseVisualStyleBackColor = false;
@@ -141,14 +126,15 @@
             // 
             // btnBack
             // 
+            btnBack.FlatAppearance.BorderSize = 0;
             btnBack.FlatStyle = FlatStyle.Flat;
-            btnBack.Font = new Font("Segoe UI", 9F);
-            btnBack.Location = new Point(11, 13);
+            btnBack.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            btnBack.Image = (Image)resources.GetObject("btnBack.Image");
+            btnBack.Location = new Point(-11, -1);
             btnBack.Margin = new Padding(3, 4, 3, 4);
             btnBack.Name = "btnBack";
-            btnBack.Size = new Size(80, 40);
+            btnBack.Size = new Size(72, 50);
             btnBack.TabIndex = 5;
-            btnBack.Text = "Back";
             btnBack.Click += btnBack_Click;
             // 
             // Login
@@ -170,7 +156,14 @@
             panelLogin.PerformLayout();
             ResumeLayout(false);
         }
-
-        private Button ResetPassword;
+        private Panel panelLogin;
+        private LinkLabel ResetPassword;
+        private Label titleLogin;
+        private Label labelUser;
+        private TextBox txtUsername;
+        private Label labelPass;
+        private TextBox txtPassword;
+        private Button btnLogin;
+        private Button btnBack;
     }
 }

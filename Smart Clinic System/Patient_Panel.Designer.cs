@@ -1,4 +1,4 @@
-﻿namespace Smart_Clinic_System
+﻿namespace UnifiedHealthcareSystem
 {
     partial class Patient_Panel
     {
@@ -87,6 +87,9 @@
             // booking
             // 
             booking.BackColor = Color.FromArgb(0, 192, 0);
+            booking.FlatStyle = FlatStyle.Flat;
+            booking.Font = new Font("Microsoft Sans Serif", 8.25F);
+            booking.ForeColor = Color.White;
             booking.Location = new Point(846, 40);
             booking.Name = "booking";
             booking.Size = new Size(93, 59);
@@ -99,6 +102,7 @@
             // 
             lblPatientTitle.AutoSize = true;
             lblPatientTitle.Font = new Font("Segoe UI", 14F, FontStyle.Bold);
+            lblPatientTitle.ForeColor = Color.DarkBlue;
             lblPatientTitle.Location = new Point(10, 8);
             lblPatientTitle.Name = "lblPatientTitle";
             lblPatientTitle.Size = new Size(225, 25);
@@ -345,22 +349,39 @@
             // 
             // btnRefresh
             // 
+            btnRefresh.BackColor = Color.DarkBlue;
+            btnRefresh.FlatAppearance.BorderSize = 0;
+            btnRefresh.FlatAppearance.MouseDownBackColor = Color.Blue;
             btnRefresh.FlatStyle = FlatStyle.Flat;
-            btnRefresh.Location = new Point(780, 585);
+            btnRefresh.Font = new Font("Microsoft Sans Serif", 8.25F);
+            btnRefresh.ForeColor = Color.White;
+            btnRefresh.Image = (Image)resources.GetObject("btnRefresh.Image");
+            btnRefresh.ImageAlign = ContentAlignment.MiddleLeft;
+            btnRefresh.Location = new Point(860, 600);
             btnRefresh.Name = "btnRefresh";
             btnRefresh.Size = new Size(120, 38);
-            btnRefresh.TabIndex = 3;
+            btnRefresh.TabIndex = 5;
             btnRefresh.Text = "تحديث البيانات";
+            btnRefresh.TextAlign = ContentAlignment.MiddleRight;
+            btnRefresh.UseVisualStyleBackColor = false;
             btnRefresh.Click += btnRefresh_Click;
             // 
             // btnBack
             // 
+            btnBack.BackColor = Color.Gray;
+            btnBack.FlatAppearance.BorderSize = 0;
             btnBack.FlatStyle = FlatStyle.Flat;
-            btnBack.Location = new Point(660, 585);
+            btnBack.Font = new Font("Microsoft Sans Serif", 8.25F);
+            btnBack.ForeColor = Color.White;
+            btnBack.Image = (Image)resources.GetObject("btnBack.Image");
+            btnBack.ImageAlign = ContentAlignment.MiddleLeft;
+            btnBack.Location = new Point(740, 600);
             btnBack.Name = "btnBack";
             btnBack.Size = new Size(100, 38);
-            btnBack.TabIndex = 4;
+            btnBack.TabIndex = 6;
             btnBack.Text = "العودة";
+            btnBack.TextAlign = ContentAlignment.MiddleRight;
+            btnBack.UseVisualStyleBackColor = false;
             btnBack.Click += btnBack_Click;
             // 
             // Patient_Panel
@@ -369,11 +390,11 @@
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.White;
             ClientSize = new Size(1000, 650);
+            Controls.Add(btnRefresh);
+            Controls.Add(btnBack);
             Controls.Add(pnlPatientInfo);
             Controls.Add(grpVisits);
             Controls.Add(grpVisitDetails);
-            Controls.Add(btnRefresh);
-            Controls.Add(btnBack);
             FormBorderStyle = FormBorderStyle.FixedSingle;
             Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
@@ -382,6 +403,7 @@
             StartPosition = FormStartPosition.CenterScreen;
             Text = "الملف الطبي للمريض";
             FormClosing += Patient_Panel_FormClosing;
+            Load += Patient_Panel_Load;
             pnlPatientInfo.ResumeLayout(false);
             pnlPatientInfo.PerformLayout();
             grpVisits.ResumeLayout(false);
@@ -430,9 +452,8 @@
         private System.Windows.Forms.TextBox txtDetailReports;
         private System.Windows.Forms.Label lblDate;
         private System.Windows.Forms.TextBox txtDate;
-
-        private System.Windows.Forms.Button btnRefresh;
-        private System.Windows.Forms.Button btnBack;
         private Button booking;
+        private Button btnRefresh;
+        private Button btnBack;
     }
 }

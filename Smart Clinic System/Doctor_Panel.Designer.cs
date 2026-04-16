@@ -1,4 +1,4 @@
-﻿namespace Smart_Clinic_System
+﻿namespace UnifiedHealthcareSystem
 {
     partial class Doctor_Panel
     {
@@ -24,7 +24,7 @@
             DataGridViewCellStyle dataGridViewCellStyle5 = new DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Doctor_Panel));
             grpAddPatient = new GroupBox();
-            button1 = new Button();
+            ShowRebort = new Button();
             lblName = new Label();
             txtName = new TextBox();
             lblNationalID_Add = new Label();
@@ -71,7 +71,7 @@
             // 
             // grpAddPatient
             // 
-            grpAddPatient.Controls.Add(button1);
+            grpAddPatient.Controls.Add(ShowRebort);
             grpAddPatient.Controls.Add(lblName);
             grpAddPatient.Controls.Add(txtName);
             grpAddPatient.Controls.Add(lblNationalID_Add);
@@ -101,19 +101,19 @@
             grpAddPatient.TabStop = false;
             grpAddPatient.Text = "إضافة مريض / تسجيل زيارة";
             // 
-            // button1
+            // ShowRebort
             // 
-            button1.BackColor = Color.FromArgb(10, 120, 210);
-            button1.FlatStyle = FlatStyle.Flat;
-            button1.Font = new Font("Segoe UI", 8F);
-            button1.ForeColor = Color.White;
-            button1.Location = new Point(154, 388);
-            button1.Name = "button1";
-            button1.Size = new Size(80, 36);
-            button1.TabIndex = 23;
-            button1.Text = "عرض التقارير السابقة";
-            button1.UseVisualStyleBackColor = false;
-            button1.Click += button1_Click;
+            ShowRebort.BackColor = Color.FromArgb(10, 120, 210);
+            ShowRebort.FlatStyle = FlatStyle.Flat;
+            ShowRebort.Font = new Font("Segoe UI", 8F);
+            ShowRebort.ForeColor = Color.White;
+            ShowRebort.Location = new Point(288, 384);
+            ShowRebort.Name = "ShowRebort";
+            ShowRebort.Size = new Size(80, 36);
+            ShowRebort.TabIndex = 23;
+            ShowRebort.Text = "عرض التقارير السابقة";
+            ShowRebort.UseVisualStyleBackColor = false;
+            ShowRebort.Click += ShowRebort_Click;
             // 
             // lblName
             // 
@@ -288,7 +288,7 @@
             btnAddPatient.BackColor = Color.FromArgb(10, 120, 210);
             btnAddPatient.FlatStyle = FlatStyle.Flat;
             btnAddPatient.ForeColor = Color.White;
-            btnAddPatient.Location = new Point(246, 392);
+            btnAddPatient.Location = new Point(380, 388);
             btnAddPatient.Name = "btnAddPatient";
             btnAddPatient.Size = new Size(80, 30);
             btnAddPatient.TabIndex = 22;
@@ -523,6 +523,7 @@
             StartPosition = FormStartPosition.CenterScreen;
             Text = "لوحة الطبيب - Clinic";
             FormClosing += Doctor_Panel_FormClosing;
+            Load += Doctor_Panel_Load;
             grpAddPatient.ResumeLayout(false);
             grpAddPatient.PerformLayout();
             grpFollow.ResumeLayout(false);
@@ -590,6 +591,6 @@
         private Label lblTitle;
         private Label lblDoctorName;
         private Button btnLogout;
-        private Button button1;
+        private Button ShowRebort;
     }
 }

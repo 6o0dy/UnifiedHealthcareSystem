@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup />
+  <ItemGroup>
+    <Compile Update="Administrator.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="AdminPassword.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Booking.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Doctor_Panel.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Form1.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Login.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Main.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Paition.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="PatientDetails.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Patient_Panel.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="pharmacist.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="ResetPassword.cs">
+      <SubType>Form</SubType>
+    </Compile>
+  </ItemGroup>
+</Project>

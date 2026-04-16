@@ -1,4 +1,4 @@
-﻿namespace Smart_Clinic_System
+﻿namespace UnifiedHealthcareSystem
 {
     partial class pharmacist
     {
@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(pharmacist));
             txtDetailTreatment = new TextBox();
             lblDetailTreatment = new Label();
             grpVisitDetails = new GroupBox();
@@ -139,9 +140,13 @@
             Controls.Add(panel1);
             Controls.Add(grpVisitDetails);
             Controls.Add(grpVisits);
+            Icon = (Icon)resources.GetObject("$this.Icon");
+            MaximizeBox = false;
             Name = "pharmacist";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "pharmacist";
             FormClosing += pharmacist_FormClosing;
+            Load += pharmacist_Load;
             grpVisitDetails.ResumeLayout(false);
             grpVisitDetails.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)dgvVisits).EndInit();

@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Smart_Clinic_System
+namespace UnifiedHealthcareSystem
 {
     public partial class Patient : Form
     {
@@ -21,19 +21,11 @@ namespace Smart_Clinic_System
 
         private void btnPatientBack_Click(object sender, EventArgs e)
         {
-            Main f1 = new Main();
-            f1.Show();
+            new Main().Show();
             this.Close();
         }
 
-        private void Paition_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            if (Application.OpenForms.Count == 2)
-            {
-                Application.Exit();
-            }
-        }
-
+        // عند الضغط علي زر البحث يتم فحص الرقم القومي المدخل من خلال ميثود AnalyzeID وهذا الميثود موجود في Doctor_Panel.cs
         private void btnSearchPatient_Click(object sender, EventArgs e)
         {
             if (txtPatientNID.Text.Length == 14 && double.TryParse(txtPatientNID.Text, out _))
@@ -41,16 +33,15 @@ namespace Smart_Clinic_System
                 string[] AnalyzedID = Doctor_Panel.AnalyzeID(txtPatientNID.Text);
                 if (AnalyzedID != null && AnalyzedID.Length > 0)
                 {
-
-                    Patient_Panel Pa = new Patient_Panel(txtPatientNID.Text); Pa.Show();
+                    new Patient_Panel(txtPatientNID.Text).Show();
                     this.Close();
-
                 }
             }
-            else
-            {
-                MessageBox.Show("الرقم القومي غير صحيح، يجب أن يكون 14 رقم.", "بيانات غير صحيحة", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+        }
+
+        private void Paition_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (Application.OpenForms.Count == 2) Application.Exit();
         }
     }
 }

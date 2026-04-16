@@ -9,7 +9,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Smart_Clinic_System
+namespace UnifiedHealthcareSystem
 {
     public partial class Login : Form
     {
@@ -20,8 +20,7 @@ namespace Smart_Clinic_System
 
         private void btnBack_Click(object sender, EventArgs e)
         {
-            Main f1 = new Main();
-            f1.Show();
+            new Main().Show();
             this.Close();
         }
 
@@ -32,27 +31,12 @@ namespace Smart_Clinic_System
         }
         //ــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
 
-        private void ResetPassword_Click(object sender, EventArgs e)
-        {
-            ResetPassword res = new ResetPassword();
-            res.ShowDialog();
-        }
-
         private void Login_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (Application.OpenForms.Count == 2)
-            {
-                Application.Exit();
-            }
+            if (Application.OpenForms.Count == 2) Application.Exit();
         }
 
         //===============================================================================================================
-
-        private void _size(int w, int h)
-        {
-            this.ClientSize = new Size(w, h);
-            this.CenterToScreen();
-        }
 
         // ميثود تسجيل الدخول
         private void login(string user, string pass)
@@ -65,8 +49,7 @@ namespace Smart_Clinic_System
                 {
                     if (account.info.password == pass)
                     {
-                        Doctor_Panel f3 = new Doctor_Panel(account);
-                        f3.Show();
+                        new Doctor_Panel(account).Show();
                         this.Close();
                         return;
                     }
@@ -75,6 +58,11 @@ namespace Smart_Clinic_System
                 }
             }
             MessageBox.Show("اسم المستخدم او الرقم القومي او البريد الالكتروني غير صحيح");
+        }
+
+        private void ResetPassword_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+           new ResetPassword().ShowDialog();
         }
         //ــــــــــــــــــــــــ
     }

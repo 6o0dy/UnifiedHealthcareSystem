@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Smart_Clinic_System.Properties {
+namespace UnifiedHealthcareSystem.Properties {
     using System;
     
     

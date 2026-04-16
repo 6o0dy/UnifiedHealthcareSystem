@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using static System.Net.Mime.MediaTypeNames;
 
-namespace Smart_Clinic_System
+namespace UnifiedHealthcareSystem
 {
     public partial class ResetPassword : Form
     {
@@ -22,33 +22,39 @@ namespace Smart_Clinic_System
 
         private void Reset_Click(object sender, EventArgs e)
         {
-            Reset(txtUsername.Text, textID.Text, textEmail.Text, textPhone.Text, txtPassword.Text);
+            Reset(txtUsername.Text, textID.Text, textPhone.Text, txtPassword.Text);
         }
 
-        private void Reset(string user, string id, string email, string phone, string newPass)
+        // ميثود تغير كلمه المرور تقوم بالتحقق من البيانات المدخله ثم تغير كلمه المرور في حال كانت البيانات صحيحه
+        private void Reset(string user, string id, string phone, string newPass)
         {
             GetAccountsFromFile all = new GetAccountsFromFile();
 
             CreatAccount[] account = all.AllAccounts();
             for (int i = 0; i < account.Length; i++)
             {
-                if (account[i].username == user && account[i].id == id && account[i].email == email && account[i].info.phone == phone)
+                if (account[i].username == user && account[i].id == id && account[i].info.phone == phone)
                 {
                     if (newPass.Length > 5)
                     {
                         account[i].info.password = newPass;
 
-                        string updatedJson = JsonSerializer.Serialize(account, new JsonSerializerOptions { WriteIndented = true });
-                        File.WriteAllText("DoctorAccount.json", updatedJson);
+                        Read_Write.WriteInFile("DoctorAccount.json", account);
 
-                        MessageBox.Show("تم تغير كلمه المرور");
+                        MessageBox.Show("تم تغير كلمه المرور", "تم", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        this.Close();
                         return;
                     }
-                    MessageBox.Show("كلمه المرور يجب ان تكون اكثر من 5 حروف");
+                    MessageBox.Show("كلمه المرور يجب ان تكون اكثر من 5 حروف", "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
             }
-            MessageBox.Show("عذرا البيانات غير صحيحه");
+            MessageBox.Show("عذرا البيانات غير صحيحه", "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+
+        private void backTologin_Click(object sender, EventArgs e)
+        {
+            this.Close();
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace Smart_Clinic_System
+﻿namespace UnifiedHealthcareSystem
 {
     partial class PatientDetails
     {
@@ -12,6 +12,7 @@
 
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PatientDetails));
             lblTitle = new Label();
             btnClose = new Button();
             grpPatientInfo = new GroupBox();
@@ -231,11 +232,13 @@
             Controls.Add(grpVisitsList);
             Controls.Add(grpVisitDetails);
             FormBorderStyle = FormBorderStyle.FixedSingle;
+            Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
             Name = "PatientDetails";
             RightToLeft = RightToLeft.No;
             StartPosition = FormStartPosition.CenterParent;
             Text = "Patient File";
+            Load += PatientDetails_Load;
             grpPatientInfo.ResumeLayout(false);
             grpPatientInfo.PerformLayout();
             grpVisitsList.ResumeLayout(false);

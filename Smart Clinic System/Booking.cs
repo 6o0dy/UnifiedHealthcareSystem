@@ -3,16 +3,19 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Smart_Clinic_System
+namespace UnifiedHealthcareSystem
 {
     public partial class Booking : Form
     {
+        
+        // يتم استقبال مصفوفة تحتوي على بيانات المريض (الاسم، الرقم القومي، الهاتف) من خلال الكونستركتور ويتم تحليل الرقم القومي لعرض معلومات إضافية عن المريض مثل تاريخ الميلاد والعمر والجنس والمحافظة
         public Booking(string[] me)
         {
             InitializeComponent();
@@ -38,6 +41,7 @@ namespace Smart_Clinic_System
             RefreshBookingGrid();
         }
 
+        // يتم تحميل بيانات الأطباء من خلال قراءة الحسابات من الملف وعرضها في DataGridView مع إخفاء بعض الأعمدة مثل الرقم القومي والبريد الإلكتروني واسم المستخدم واسم العيادة
         private void LoadDoctorsData()
         {
             try
@@ -61,19 +65,20 @@ namespace Smart_Clinic_System
                     dgvDoctor.DataSource = displayList;
 
                     string[] hidden = { "الرقم_القومي", "البريد_الإلكتروني", "اسم_المستخدم", "اسم_العيادة" };
-                    foreach (var col in hidden)
+                    foreach (var col in hidden) 
                         if (dgvDoctor.Columns.Contains(col)) dgvDoctor.Columns[col].Visible = false;
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("حدث خطأ أثناء تحميل البيانات: " + ex.Message);
+                MessageBox.Show("حدث خطأ أثناء تحميل البيانات: " + ex.Message,"خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
+        // عند النقر المزدوج على صف في DataGridView الخاص بالأطباء، يتم ملء الحقول الخاصة باسم الطبيب والتخصص واسم العيادة ورقم الهاتف بناءً على البيانات الموجودة في الصف المحدد
         private void dgvDoctor_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex >= 0) 
+            if (e.RowIndex >= 0)
             {
                 DataGridViewRow row = dgvDoctor.Rows[e.RowIndex];
 
@@ -84,6 +89,7 @@ namespace Smart_Clinic_System
             }
         }
 
+        // عند النقر على زر الحجز، يتم إنشاء كائن جديد من نوع Appointment يحتوي على بيانات المريض والطبيب والتاريخ المحدد، ثم يتم حفظ هذا الحجز باستخدام PatientManager وعرض رسالة تأكيد للمستخدم
         private void BookingOk_Click(object sender, EventArgs e)
         {
             try
@@ -93,7 +99,6 @@ namespace Smart_Clinic_System
                     NationalID = txtNationalID.Text,
                     FullName = txtName.Text,
                     PhoneNumber = txtPhone.Text,
-
                     DoctorID = dgvDoctor.CurrentRow.Cells["الرقم_القومي"].Value.ToString(),
                     DoctorName = DoctorName.Text,
                     Specialty = Specialization.Text,
@@ -104,15 +109,21 @@ namespace Smart_Clinic_System
                 PatientManager manager = new PatientManager();
                 manager.SaveNewAppointment(newApp);
 
-                MessageBox.Show("تم الحجز بنجاح بنظام التوريث!");
+                MessageBox.Show("تم الحجز بنجاح!");
                 this.Close();
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message); 
+                MessageBox.Show(ex.Message);
             }
         }
 
+        private void btnBack_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        // دالة لتحديث DataGridView الخاص بالحجوزات، حيث يتم جلب جميع الحجوزات من PatientManager ثم تصفيتها لعرض الحجوزات الخاصة بالمريض الحالي بناءً على الرقم القومي، ويتم عرض هذه الحجوزات في DataGridView مع ضبط حجم الأعمدة تلقائياً
         private void RefreshBookingGrid()
         {
             try
@@ -141,6 +152,26 @@ namespace Smart_Clinic_System
             {
                 MessageBox.Show("خطأ في تحميل الحجوزات: " + ex.Message);
             }
+        }
+
+
+        //=================================================================
+        private void Booking_Load(object sender, EventArgs e)
+        {
+            // استدعاء دالة الرسم لكل زرار مع تحديد نصف قطر الانحناء
+            SetRoundedRegion(BookingOk, 20);
+            SetRoundedRegion(btnBack, 20);
+        }
+        private void SetRoundedRegion(Control control, int radius)
+        {
+            GraphicsPath path = new GraphicsPath();
+            path.StartFigure();
+            path.AddArc(0, 0, radius, radius, 180, 90);
+            path.AddArc(control.Width - radius, 0, radius, radius, 270, 90);
+            path.AddArc(control.Width - radius, control.Height - radius, radius, radius, 0, 90);
+            path.AddArc(0, control.Height - radius, radius, radius, 90, 90);
+            path.CloseFigure();
+            control.Region = new Region(path);
         }
     }
 }

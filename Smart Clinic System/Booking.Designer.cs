@@ -1,4 +1,4 @@
-﻿namespace Smart_Clinic_System
+﻿namespace UnifiedHealthcareSystem
 {
     partial class Booking
     {
@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Booking));
             BookingOk = new Button();
             dgvDoctor = new DataGridView();
             txtPhone = new TextBox();
@@ -72,7 +73,9 @@
             // BookingOk
             // 
             BookingOk.BackColor = Color.FromArgb(0, 192, 0);
-            BookingOk.Location = new Point(850, 31);
+            BookingOk.FlatAppearance.BorderSize = 0;
+            BookingOk.FlatStyle = FlatStyle.Flat;
+            BookingOk.Location = new Point(850, 29);
             BookingOk.Name = "BookingOk";
             BookingOk.Size = new Size(100, 39);
             BookingOk.TabIndex = 15;
@@ -131,6 +134,7 @@
             // 
             lblPatientTitle.AutoSize = true;
             lblPatientTitle.Font = new Font("Segoe UI", 14F, FontStyle.Bold);
+            lblPatientTitle.ForeColor = SystemColors.ControlText;
             lblPatientTitle.Location = new Point(15, 16);
             lblPatientTitle.Name = "lblPatientTitle";
             lblPatientTitle.Size = new Size(225, 25);
@@ -148,12 +152,14 @@
             // 
             // btnBack
             // 
+            btnBack.FlatAppearance.BorderSize = 0;
             btnBack.FlatStyle = FlatStyle.Flat;
             btnBack.Location = new Point(850, 74);
             btnBack.Name = "btnBack";
             btnBack.Size = new Size(100, 38);
             btnBack.TabIndex = 9;
             btnBack.Text = "العودة";
+            btnBack.Click += btnBack_Click;
             // 
             // txtName
             // 
@@ -408,8 +414,12 @@
             Controls.Add(grpAddPatient);
             Controls.Add(pnlPatientInfo);
             Controls.Add(grpVisits);
+            Icon = (Icon)resources.GetObject("$this.Icon");
+            MaximizeBox = false;
             Name = "Booking";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "Booking";
+            Load += Booking_Load;
             ((System.ComponentModel.ISupportInitialize)dgvDoctor).EndInit();
             pnlPatientInfo.ResumeLayout(false);
             pnlPatientInfo.PerformLayout();

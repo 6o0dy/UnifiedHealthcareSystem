@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Windows.Forms;
 
-namespace Smart_Clinic_System
+namespace UnifiedHealthcareSystem
 {
     public partial class PatientDetails : Form
     {
@@ -24,6 +25,7 @@ namespace Smart_Clinic_System
             LoadVisitDates();
         }
 
+        // دالة لعرض الزيارات الخاصة بالمريض الحالي، حيث يتم تصفية الزيارات بناءً على تخصص الطبيب وعرضها في DataGridView
         private void LoadVisitDates()
         {
             try
@@ -45,7 +47,8 @@ namespace Smart_Clinic_System
                     .ToList();
 
                 var sortedVisits = relevantVisits
-                    .OrderByDescending(v => {
+                    .OrderByDescending(v =>
+                    {
                         DateTime dt;
                         return DateTime.TryParse(v.Date, out dt) ? dt : DateTime.MinValue;
                     })
@@ -69,6 +72,7 @@ namespace Smart_Clinic_System
             }
         }
 
+        // عند تغيير التحديد في DataGridView الخاص بالزيارات، يتم تحديث الحقول الخاصة بالتشخيص والعلاج والتقارير بناءً على الصف المحدد
         private void dgvVisitsList_SelectionChanged(object sender, EventArgs e)
         {
             if (dgvVisitsList.SelectedRows.Count > 0)
@@ -83,6 +87,26 @@ namespace Smart_Clinic_System
         private void btnClose_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+
+        //============================================================================================
+        private void PatientDetails_Load(object sender, EventArgs e)
+        {
+
+            // استدعاء دالة الرسم لكل زرار مع تحديد نصف قطر الانحناء
+            SetRoundedRegion(btnClose, 20);
+           
+        }
+        private void SetRoundedRegion(Control control, int radius)
+        {
+            GraphicsPath path = new GraphicsPath();
+            path.StartFigure();
+            path.AddArc(0, 0, radius, radius, 180, 90);
+            path.AddArc(control.Width - radius, 0, radius, radius, 270, 90);
+            path.AddArc(control.Width - radius, control.Height - radius, radius, radius, 0, 90);
+            path.AddArc(0, control.Height - radius, radius, radius, 90, 90);
+            path.CloseFigure();
+            control.Region = new Region(path);
         }
     }
 }
