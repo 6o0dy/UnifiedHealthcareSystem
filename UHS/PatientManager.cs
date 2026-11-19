@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using UnifiedHealthcareSystem.DataStructures;
 
 namespace UnifiedHealthcareSystem
 {
@@ -6,7 +7,7 @@ namespace UnifiedHealthcareSystem
     public class PatientManager
     {
         private const string FileName = "PatientsFile.json";
-        public List<recordData> PatientsData { get; private set; } = new List<recordData>();
+        public SinglyLinkedList<recordData> PatientsData { get; private set; } = new SinglyLinkedList<recordData>();
 
         // عند إنشاء كائن جديد من هذا الكلاس، يتم تحميل البيانات من ملف JSON إلى الذاكرة
         public PatientManager()
@@ -21,13 +22,13 @@ namespace UnifiedHealthcareSystem
             {
                 string? json = Read_Write.ReadFromFile(FileName);
                 if (json != null)
-                    PatientsData = JsonSerializer.Deserialize<List<recordData>>(json) ?? new List<recordData>();
+                    PatientsData = JsonSerializer.Deserialize<SinglyLinkedList<recordData>>(json) ?? new SinglyLinkedList<recordData>();
                 else
-                    PatientsData = new List<recordData>();
+                    PatientsData = new SinglyLinkedList<recordData>();
             }
             catch
             {
-                PatientsData = new List<recordData>();
+                PatientsData = new SinglyLinkedList<recordData>();
             }
         }
 
@@ -64,13 +65,13 @@ namespace UnifiedHealthcareSystem
                 if (!string.IsNullOrWhiteSpace(phone) && phone != foundPatient.patients.PhoneNumber)
                     foundPatient.patients.PhoneNumber = phone;
 
-                foundPatient.patients.Doctors ??= new List<doctor>();
+                foundPatient.patients.Doctors ??= new SinglyLinkedList<doctor>();
                 var foundDoctor = foundPatient.patients.Doctors.FirstOrDefault(d => d.NationalID == doctorAccount.id);
 
                 if (foundDoctor != null)
-                    foundDoctor.Visits.Add(newVisit);
+                    foundDoctor.Visits.AddLast(newVisit);
                 else
-                    foundPatient.patients.Doctors.Add(CreateDoctorEntry(doctorAccount, newVisit));
+                    foundPatient.patients.Doctors.AddLast(CreateDoctorEntry(doctorAccount, newVisit));
             }
             else
             {
@@ -81,10 +82,10 @@ namespace UnifiedHealthcareSystem
                         FullName = name,
                         NationalID = nationalId,
                         PhoneNumber = phone,
-                        Doctors = new List<doctor> { CreateDoctorEntry(doctorAccount, newVisit) }
+                        Doctors = new SinglyLinkedList<doctor> { CreateDoctorEntry(doctorAccount, newVisit) }
                     }
                 };
-                PatientsData.Add(newRecord);
+                PatientsData.AddLast(newRecord);
             }
             SaveData();
         }
@@ -99,7 +100,7 @@ namespace UnifiedHealthcareSystem
                 PhoneNumber = acc.info.phone,
                 Specialty = acc.info.specialty,
                 ClinicName = acc.info.clinicName,
-                Visits = new List<visit> { v }
+                Visits = new SinglyLinkedList<visit> { v }
             };
         }
 
@@ -173,7 +174,7 @@ namespace UnifiedHealthcareSystem
                 var record = GetPatientById(nationalId);
                 if (record == null) return false;
 
-                record.patients.Doctors ??= new List<doctor>();
+                record.patients.Doctors ??= new SinglyLinkedList<doctor>();
                 record.patients.Doctors.RemoveAll(d => d.NationalID == doctorId);
 
                 if (record.patients.Doctors.Count == 0)

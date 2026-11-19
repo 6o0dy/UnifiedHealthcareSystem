@@ -1,5 +1,6 @@
 ﻿using System.Data;
 using System.Drawing.Drawing2D;
+using UnifiedHealthcareSystem.DataStructures;
 
 namespace UnifiedHealthcareSystem
 {
@@ -45,7 +46,7 @@ namespace UnifiedHealthcareSystem
 
                 txtPhone.Text = MyInfo.patients.PhoneNumber;
 
-                var allVisits = (MyInfo.patients.Doctors ?? new List<doctor>()).SelectMany(d => d.Visits.Select(v => new
+                var allVisits = (MyInfo.patients.Doctors ?? new SinglyLinkedList<doctor>()).SelectMany(d => d.Visits.Select(v => new
                 {
                     تاريخ_الزيارة = v.Date,
                     الدكتور = d.FullName,

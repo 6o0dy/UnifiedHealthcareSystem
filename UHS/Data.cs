@@ -1,4 +1,6 @@
-﻿namespace UnifiedHealthcareSystem
+﻿using UnifiedHealthcareSystem.DataStructures;
+
+namespace UnifiedHealthcareSystem
 {
     // هذا الكلاس هو الذي يحتوي علي كل شئ عن الشخص سواء كان مريض او دكتور
     public class person
@@ -109,13 +111,13 @@
                 }
             }
         }
-        public List<visit> Visits { get; set; } = new List<visit>();
+        public SinglyLinkedList<visit> Visits { get; set; } = new SinglyLinkedList<visit>();
     }
 
     // هذا الكلاس خاص بالمريض الذي يحتوي علي كل المعلومات الخاصة به والأطباء الذين قام بزيارتهم
     public class patient : person
     {
-        public List<doctor> Doctors { get; set; } = new List<doctor>();
+        public SinglyLinkedList<doctor> Doctors { get; set; } = new SinglyLinkedList<doctor>();
     }
 
     // هذا الكلاس خاص بالحجز الذي يقوم به المريض عند اختيار طبيب معين
@@ -193,6 +195,9 @@
         }
 
         public string Status { get; set; } = "Pending";
+
+        // حالة طوارئ: الموعد بياخد أولوية في طابور الدكتور
+        public bool IsEmergency { get; set; }
     }
 
     // هذا الكلاس خاص بملف البيانات الذي يحتوي علي كل المعلومات الخاصة بالمريض

@@ -1,5 +1,6 @@
 ﻿using System.Data;
 using System.Drawing.Drawing2D;
+using UnifiedHealthcareSystem.DataStructures;
 
 namespace UnifiedHealthcareSystem
 {
@@ -262,30 +263,51 @@ namespace UnifiedHealthcareSystem
         }
 
         // دالة لتحديث DataGridView الخاص بالحجوزات، حيث يتم جلب جميع الحجوزات من PatientManager، ثم يتم تصفية الحجوزات التي تخص الطبيب الحالي وعرض بيانات المريض والتاريخ والحالة في DataGridView.
+        // الطابور ذو الأولوية: حالات الطوارئ بتتخدم قبل الحجوزات العادية
+        private MyPriorityQueue<Appointment> bookingQueue = new MyPriorityQueue<Appointment>();
+
         private void RefreshBookingGrid()
         {
             try
             {
-                var allAppointments = manager.GetAllAppointments();
+                bookingQueue = new MyPriorityQueue<Appointment>();
 
-                var myBookings = allAppointments
+                // الحجوزات المعلقة مرتبة بتاريخ الحجز (الأقدم الأول) ثم بتتقسم علي طابور الطوارئ والعادي
+                var pending = manager.GetAllAppointments()
                     .Where(a => a.DoctorID == account.id && a.Status == "Pending")
+                    .OrderBy(a => DateTime.TryParse(a.AppointmentDate, out var d) ? d : DateTime.MaxValue)
+                    .ToList();
+
+                foreach (var appointment in pending)
+                    bookingQueue.Enqueue(appointment, appointment.IsEmergency);
+
+                var myBookings = bookingQueue.InServiceOrder()
                     .Select(a => new
                     {
                         AppointmentID = a.AppointmentID,
                         اسم_المريض = a.FullName,
                         الرقم_القومي = a.NationalID,
                         الموبايل = a.PhoneNumber,
-                        التاريخ = a.AppointmentDate
+                        التاريخ = a.AppointmentDate,
+                        الأولوية = a.IsEmergency ? "طوارئ" : "عادي"
                     }).ToList();
 
                 dgvBooking.DataSource = myBookings;
+
+                grpPatientsList.Text = $"الحجوزات المتاحة (طابور: {bookingQueue.Count} | طوارئ: {bookingQueue.EmergencyCount})";
 
                 if (dgvBooking.Columns.Count > 0)
                 {
                     dgvBooking.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
                     if (dgvBooking.Columns.Contains("AppointmentID"))
                         dgvBooking.Columns["AppointmentID"]!.Visible = false;
+                }
+
+                // تلوين صفوف الطوارئ بلون مميز
+                foreach (DataGridViewRow row in dgvBooking.Rows)
+                {
+                    if (row.Cells["الأولوية"].Value?.ToString() == "طوارئ")
+                        row.DefaultCellStyle.BackColor = Color.MistyRose;
                 }
             }
             catch (Exception ex)
@@ -308,6 +330,14 @@ namespace UnifiedHealthcareSystem
             string? appointmentId = row.Cells["AppointmentID"].Value?.ToString();
             if (string.IsNullOrEmpty(appointmentId)) return;
 
+            // لازم الحجز ده يكون هو اللي دوره في الطابور (الطوارئ بتاخد الأولوية)
+            if (bookingQueue.IsEmpty || bookingQueue.Peek().AppointmentID != appointmentId)
+            {
+                MessageBox.Show("هذا الحجز لسه مش دوره. الطابور بيخدم حالات الطوارئ أولاً ثم الحجوزات بترتيب التاريخ.",
+                    "تنبيه", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             DialogResult confirm = MessageBox.Show(
                 "هل تم إتمام هذه الزيارة؟ سيتم تحويل حالة الحجز الي مكتمل وإزالته من قائمة الحجوزات المعلقة.",
                 "تأكيد إتمام الحجز",
@@ -316,6 +346,7 @@ namespace UnifiedHealthcareSystem
 
             if (confirm == DialogResult.Yes)
             {
+                bookingQueue.Dequeue();
                 manager.CompleteAppointment(appointmentId);
                 RefreshBookingGrid();
             }

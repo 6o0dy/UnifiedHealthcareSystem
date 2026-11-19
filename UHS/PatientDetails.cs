@@ -1,5 +1,6 @@
 ﻿using System.Data;
 using System.Drawing.Drawing2D;
+using UnifiedHealthcareSystem.DataStructures;
 
 namespace UnifiedHealthcareSystem
 {
@@ -22,6 +23,15 @@ namespace UnifiedHealthcareSystem
         }
 
         // دالة لعرض الزيارات الخاصة بالمريض الحالي، حيث يتم تصفية الزيارات بناءً على تخصص الطبيب وعرضها في DataGridView
+        private class VisitRow
+        {
+            public string Date { get; set; } = "";
+            public string DoctorName { get; set; } = "";
+            public string Diagnosis { get; set; } = "";
+            public string _Treatment { get; set; } = "";
+            public string _Report { get; set; } = "";
+        }
+
         private void LoadVisitDates()
         {
             try
@@ -30,9 +40,10 @@ namespace UnifiedHealthcareSystem
 
                 if (_patient.patients.Doctors == null) return;
 
-                var relevantVisits = _patient.patients.Doctors
+                // بنرتب الزيارات من الأقدم للأحدث (عشان ندخلهم الستاك بالترتيب الصح)
+                var visitsOldestFirst = _patient.patients.Doctors
                     .Where(d => d.Specialty == currentDoctorSpecialty)
-                    .SelectMany(d => d.Visits.Select(v => new
+                    .SelectMany(d => d.Visits.Select(v => new VisitRow
                     {
                         Date = v.Date,
                         DoctorName = d.FullName,
@@ -40,15 +51,16 @@ namespace UnifiedHealthcareSystem
                         _Treatment = v.Treatment,
                         _Report = v.Report
                     }))
-                    .ToList();
+                    .OrderBy(v => DateTime.TryParse(v.Date, out var dt) ? dt : DateTime.MinValue);
 
-                var sortedVisits = relevantVisits
-                    .OrderByDescending(v =>
-                    {
-                        DateTime dt;
-                        return DateTime.TryParse(v.Date, out dt) ? dt : DateTime.MinValue;
-                    })
-                    .ToList();
+                // Stack: آخر زيارة بتطلع الأول
+                MyStack<VisitRow> visitsStack = new MyStack<VisitRow>();
+                foreach (VisitRow visit in visitsOldestFirst)
+                    visitsStack.Push(visit);
+
+                List<VisitRow> sortedVisits = new List<VisitRow>();
+                while (!visitsStack.IsEmpty)
+                    sortedVisits.Add(visitsStack.Pop());
 
                 dgvVisitsList.DataSource = sortedVisits;
 

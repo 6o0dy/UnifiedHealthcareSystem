@@ -60,6 +60,7 @@
             ClinicNumber = new TextBox();
             lblNextVisit = new Label();
             dtpNextVisit = new DateTimePicker();
+            chkEmergency = new CheckBox();
             groupBox1 = new GroupBox();
             booked = new DataGridView();
             ((System.ComponentModel.ISupportInitialize)dgvDoctor).BeginInit();
@@ -285,6 +286,7 @@
             grpAddPatient.Controls.Add(ClinicNumber);
             grpAddPatient.Controls.Add(lblNextVisit);
             grpAddPatient.Controls.Add(dtpNextVisit);
+            grpAddPatient.Controls.Add(chkEmergency);
             grpAddPatient.Font = new Font("Segoe UI", 10F);
             grpAddPatient.Location = new Point(625, 131);
             grpAddPatient.Name = "grpAddPatient";
@@ -379,6 +381,17 @@
             dtpNextVisit.Size = new Size(180, 25);
             dtpNextVisit.TabIndex = 21;
             // 
+            // chkEmergency
+            // 
+            chkEmergency.AutoSize = true;
+            chkEmergency.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            chkEmergency.ForeColor = Color.FromArgb(192, 0, 0);
+            chkEmergency.Location = new Point(29, 347);
+            chkEmergency.Name = "chkEmergency";
+            chkEmergency.Size = new Size(160, 21);
+            chkEmergency.TabIndex = 26;
+            chkEmergency.Text = "حالة طوارئ (أولوية في الطابور)";
+            // 
             // groupBox1
             // 
             groupBox1.Controls.Add(booked);
@@ -462,6 +475,7 @@
         private Label label2;
         private TextBox Specialization;
         private DateTimePicker dtpNextVisit;
+        private CheckBox chkEmergency;
         private Label label3;
         private TextBox DoctorPhone;
         private GroupBox groupBox1;

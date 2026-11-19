@@ -104,7 +104,8 @@ namespace UnifiedHealthcareSystem
                     DoctorID = doctorRow.Cells["الرقم_القومي"].Value?.ToString() ?? "",
                     DoctorName = doctorRow.Cells["الاسم"].Value?.ToString() ?? "",
                     Specialty = doctorRow.Cells["التخصص"].Value?.ToString() ?? "",
-                    AppointmentDate = dtpNextVisit.Value.ToString("yyyy-MM-dd")
+                    AppointmentDate = dtpNextVisit.Value.ToString("yyyy-MM-dd"),
+                    IsEmergency = chkEmergency.Checked
                 };
 
                 PatientManager manager = new PatientManager();
@@ -123,7 +124,10 @@ namespace UnifiedHealthcareSystem
 
                 manager.SaveNewAppointment(newApp);
 
-                MessageBox.Show("تم الحجز بنجاح!");
+                if (newApp.IsEmergency)
+                    MessageBox.Show("تم الحجز بنجاح!\nحجز طوارئ: هيتخدم قبل الحجوزات العادية.");
+                else
+                    MessageBox.Show("تم الحجز بنجاح!");
                 this.Close();
             }
             catch (Exception ex)
@@ -154,7 +158,8 @@ namespace UnifiedHealthcareSystem
                         الرقم_القومي = a.NationalID,
                         الموبايل = a.PhoneNumber,
                         التاريخ = a.AppointmentDate,
-                        الحالة = a.Status
+                        الحالة = a.Status,
+                        الأولوية = a.IsEmergency ? "طوارئ" : "عادي"
                     }).ToList();
 
                 booked.DataSource = myBookings;
