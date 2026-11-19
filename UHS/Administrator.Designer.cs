@@ -39,7 +39,6 @@
             lblClinic = new Label();
             txtClinic = new TextBox();
             pictureBox1 = new PictureBox();
-            txtSpec = new TextBox();
             txtPhone = new TextBox();
             lblEmail = new Label();
             txtEmail = new TextBox();
@@ -170,16 +169,6 @@
             pictureBox1.TabIndex = 20;
             pictureBox1.TabStop = false;
             // 
-            // txtSpec
-            // 
-            txtSpec.Font = new Font("Segoe UI", 10F);
-            txtSpec.Location = new Point(42, 387);
-            txtSpec.Margin = new Padding(3, 4, 3, 4);
-            txtSpec.Name = "txtSpec";
-            txtSpec.ReadOnly = true;
-            txtSpec.Size = new Size(277, 25);
-            txtSpec.TabIndex = 6;
-            // 
             // txtPhone
             // 
             txtPhone.Font = new Font("Segoe UI", 10F);
@@ -271,7 +260,6 @@
             btnRegister.Text = "Create Account";
             btnRegister.UseVisualStyleBackColor = false;
             btnRegister.Click += btnRegister_Click;
-            btnRegister.Paint += btnRegister_Paint;
             // 
             // txtPassNew
             // 
@@ -357,7 +345,6 @@
             pnlContainer.Controls.Add(txtClinic);
             pnlContainer.Controls.Add(pictureBox1);
             pnlContainer.Controls.Add(lblEmail);
-            pnlContainer.Controls.Add(txtSpec);
             pnlContainer.Controls.Add(txtEmail);
             pnlContainer.Controls.Add(txtPhone);
             pnlContainer.Controls.Add(lblUserNew);
@@ -382,8 +369,6 @@
             comboBoxSpec.Name = "comboBoxSpec";
             comboBoxSpec.Size = new Size(277, 23);
             comboBoxSpec.TabIndex = 6;
-            comboBoxSpec.SelectedIndexChanged += comboBoxSpec_SelectedIndexChanged;
-            comboBoxSpec.Leave += comboBoxSpec_Leave;
             // 
             // pictureBox5
             // 
@@ -407,6 +392,7 @@
             Name = "Administrator";
             Text = "Administrator";
             FormClosing += Administrator_FormClosing;
+            Load += Administrator_Load;
             ((System.ComponentModel.ISupportInitialize)pictureBox4).EndInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox2).EndInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
@@ -432,7 +418,6 @@
         private Label lblClinic;
         private TextBox txtClinic;
         private PictureBox pictureBox1;
-        private TextBox txtSpec;
         private TextBox txtPhone;
         private Label lblEmail;
         private TextBox txtEmail;

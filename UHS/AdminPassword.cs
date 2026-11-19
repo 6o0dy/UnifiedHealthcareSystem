@@ -32,7 +32,7 @@ namespace UnifiedHealthcareSystem
 
         private void AdminPassword_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (Application.OpenForms.Count == 2) Application.Exit();
+            if (AppFlow.IsLastVisibleForm(this)) Application.Exit();
         }
 
 

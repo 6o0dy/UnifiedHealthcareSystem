@@ -1,7 +1,7 @@
 ﻿namespace UnifiedHealthcareSystem
 {
     // هذا الكلاس هو الذي يحتوي علي كل شئ عن الشخص سواء كان مريض او دكتور
-    public class parson
+    public class person
     {
         private string _NationalID = "";
         public string NationalID
@@ -58,7 +58,7 @@
     // هذا الكلاس خاص بالزيارات التي يقوم بها المريض عند كل دكتور
     public class visit
     {
-        public string Date { get; set; }
+        public string Date { get; set; } = "";
         private string _Diagnosis = "";
         public string Diagnosis
         {
@@ -69,12 +69,12 @@
                 else throw new Exception("حقل التشخيص يجب أن يحتوي على 3 حروف على الأقل.");
             }
         }
-        public string Treatment { get; set; }
-        public string Report { get; set; }
+        public string Treatment { get; set; } = "";
+        public string Report { get; set; } = "";
     }
 
     // هذا الكلاس خاص بالدكتور الذي يحتوي علي كل المعلومات الخاصة به والزيارات التي قام بها
-    public class doctor : parson
+    public class doctor : person
     {
         private string _Specialty = "";
         public string Specialty
@@ -113,13 +113,13 @@
     }
 
     // هذا الكلاس خاص بالمريض الذي يحتوي علي كل المعلومات الخاصة به والأطباء الذين قام بزيارتهم
-    public class patient : parson
+    public class patient : person
     {
         public List<doctor> Doctors { get; set; } = new List<doctor>();
     }
 
     // هذا الكلاس خاص بالحجز الذي يقوم به المريض عند اختيار طبيب معين
-    public class Appointment : parson
+    public class Appointment : person
     {
         public string AppointmentID { get; set; } = Guid.NewGuid().ToString("N").Substring(0, 8);
 
@@ -198,6 +198,6 @@
     // هذا الكلاس خاص بملف البيانات الذي يحتوي علي كل المعلومات الخاصة بالمريض
     public class recordData
     {
-        public patient patients { get; set; }
+        public patient patients { get; set; } = new patient();
     }
 }

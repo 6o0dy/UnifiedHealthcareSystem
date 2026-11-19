@@ -4,6 +4,8 @@ namespace UnifiedHealthcareSystem
 {
     internal class Design
     {
+        private static readonly Font ButtonFont = new Font("Segoe UI", 11, FontStyle.Bold);
+
         public static void UI(object sender, PaintEventArgs e, int i1, int i2, int i3, int i4, int i5, int i6)
         {
             Button btn = (Button)sender;
@@ -24,31 +26,46 @@ namespace UnifiedHealthcareSystem
 
             }
 
-            Font font = new Font("Segoe UI", 11, FontStyle.Bold);
-
-            TextRenderer.DrawText(e.Graphics, btn.Text, font, textRect, Color.White, TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter);
+            TextRenderer.DrawText(e.Graphics, btn.Text, ButtonFont, textRect, Color.White, TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter);
         }
 
         public static void Paint(object sender, PaintEventArgs e)
         {
             Control control = (Control)sender;
-            LinearGradientBrush brush = new LinearGradientBrush(control.ClientRectangle,
+            using (LinearGradientBrush brush = new LinearGradientBrush(control.ClientRectangle,
                                 Color.White,
                                 Color.LightSteelBlue,
-                                45F);
-            e.Graphics.FillRectangle(brush, control.ClientRectangle);
+                                45F))
+            {
+                e.Graphics.FillRectangle(brush, control.ClientRectangle);
+            }
         }
 
+        // بيدّور حواف الكنترول، وبيعيد تطبيقها لو حجمه اتغير
         public static void Corner(Control control, int radius)
         {
-            GraphicsPath path = new GraphicsPath();
-            path.StartFigure();
-            path.AddArc(0, 0, radius, radius, 180, 90);
-            path.AddArc(control.Width - radius, 0, radius, radius, 270, 90);
-            path.AddArc(control.Width - radius, control.Height - radius, radius, radius, 0, 90);
-            path.AddArc(0, control.Height - radius, radius, radius, 90, 90);
-            path.CloseFigure();
-            control.Region = new Region(path);
+            ApplyCorner(control, radius);
+            control.SizeChanged += (_, _) => ApplyCorner(control, radius);
+        }
+
+        private static void ApplyCorner(Control control, int radius)
+        {
+            if (control.Width <= 0 || control.Height <= 0) return;
+
+            // لو نصف القطر أكبر من نص أصغر بعد في الكنترول بنقصه عشان الشكل ما يبوظش
+            int r = Math.Min(radius, Math.Min(control.Width, control.Height) / 2);
+
+            using (GraphicsPath path = new GraphicsPath())
+            {
+                path.AddArc(0, 0, r, r, 180, 90);
+                path.AddArc(control.Width - r, 0, r, r, 270, 90);
+                path.AddArc(control.Width - r, control.Height - r, r, r, 0, 90);
+                path.AddArc(0, control.Height - r, r, r, 90, 90);
+                path.CloseFigure();
+
+                control.Region?.Dispose();
+                control.Region = new Region(path);
+            }
         }
     }
 }

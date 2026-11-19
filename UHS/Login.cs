@@ -22,7 +22,7 @@
 
         private void Login_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (Application.OpenForms.Count == 2) Application.Exit();
+            if (AppFlow.IsLastVisibleForm(this)) Application.Exit();
         }
 
         //===============================================================================================================
@@ -34,6 +34,8 @@
 
             foreach (CreatAccount account in all.AllAccounts())
             {
+                if (account == null || account.info == null) continue;
+
                 if (account.username == user || account.id == user || account.email == user)
                 {
                     if (account.info.password == pass)

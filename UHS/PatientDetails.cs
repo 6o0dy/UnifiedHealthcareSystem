@@ -52,15 +52,15 @@ namespace UnifiedHealthcareSystem
 
                 dgvVisitsList.DataSource = sortedVisits;
 
-                if (dgvVisitsList.Columns.Contains("Date")) dgvVisitsList.Columns["Date"].HeaderText = "التاريخ";
-                if (dgvVisitsList.Columns.Contains("DoctorName")) dgvVisitsList.Columns["DoctorName"].HeaderText = "الطبيب";
-                if (dgvVisitsList.Columns.Contains("Diagnosis")) dgvVisitsList.Columns["Diagnosis"].HeaderText = "التشخيص";
+                if (dgvVisitsList.Columns.Contains("Date")) dgvVisitsList.Columns["Date"]!.HeaderText = "التاريخ";
+                if (dgvVisitsList.Columns.Contains("DoctorName")) dgvVisitsList.Columns["DoctorName"]!.HeaderText = "الطبيب";
+                if (dgvVisitsList.Columns.Contains("Diagnosis")) dgvVisitsList.Columns["Diagnosis"]!.HeaderText = "التشخيص";
 
                 string[] hidden = { "_Treatment", "_Report" };
                 foreach (var col in hidden)
-                    if (dgvVisitsList.Columns.Contains(col)) dgvVisitsList.Columns[col].Visible = false;
+                    if (dgvVisitsList.Columns.Contains(col)) dgvVisitsList.Columns[col]!.Visible = false;
 
-                dgvVisitsList_SelectionChanged(null, null);
+                dgvVisitsList_SelectionChanged(this, EventArgs.Empty);
             }
             catch (Exception ex)
             {

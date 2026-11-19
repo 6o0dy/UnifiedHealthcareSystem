@@ -21,13 +21,23 @@
             CreatAccount[] account = all.AllAccounts();
             for (int i = 0; i < account.Length; i++)
             {
+                if (account[i] == null || account[i].info == null) continue;
+
                 if (account[i].username == user && account[i].id == id && account[i].info.phone == phone)
                 {
                     if (newPass.Length > 5)
                     {
                         account[i].info.password = newPass;
 
-                        Read_Write.WriteInFile("DoctorAccount.json", account);
+                        try
+                        {
+                            Read_Write.WriteInFile("DoctorAccount.json", account);
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show("تعذر حفظ كلمة المرور: " + ex.Message, "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }
 
                         MessageBox.Show("تم تغير كلمه المرور", "تم", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         this.Close();

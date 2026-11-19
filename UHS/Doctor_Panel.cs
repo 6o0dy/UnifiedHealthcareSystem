@@ -87,7 +87,8 @@ namespace UnifiedHealthcareSystem
         {
             if (e.RowIndex >= 0)
             {
-                string selectedID = dgvVisits.Rows[e.RowIndex].Cells["ID"].Value.ToString();
+                string? selectedID = dgvVisits.Rows[e.RowIndex].Cells["ID"].Value?.ToString();
+                if (string.IsNullOrEmpty(selectedID)) return;
 
                 var patientData = manager.GetPatientById(selectedID);
 
@@ -124,7 +125,7 @@ namespace UnifiedHealthcareSystem
             txtGovernorate.Clear();
             txtAge.Clear();
             string nationalId = txtNationalID_Add.Text;
-            string[] analyzedID = AnalyzeID(nationalId);
+            string[]? analyzedID = AnalyzeID(nationalId);
             try
             {
                 if (analyzedID != null)
@@ -143,7 +144,7 @@ namespace UnifiedHealthcareSystem
         private void RefreshMyPatients()
         {
             var myPatients = manager.PatientsData
-                .Where(r => r.patients.Doctors.Any(d => d.NationalID == account.id))
+                .Where(r => r.patients?.Doctors != null && r.patients.Doctors.Any(d => d.NationalID == account.id))
                 .Select(r => new
                 {
                     Name = r.patients.FullName,
@@ -172,11 +173,11 @@ namespace UnifiedHealthcareSystem
 
         private void Doctor_Panel_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (Application.OpenForms.Count == 2) Application.Exit();
+            if (AppFlow.IsLastVisibleForm(this)) Application.Exit();
         }
 
         // دالة لتحليل الرقم القومي واستخراج تاريخ الميلاد والعمر والجنس والمحافظة. يتم التحقق من صحة الرقم القومي بناءً على طوله ومحتوياته، ثم يتم حساب البيانات المطلوبة وإرجاعها في مصفوفة من السلاسل النصية.
-        public static string[] AnalyzeID(string id)
+        public static string[]? AnalyzeID(string id)
         {
             if (string.IsNullOrEmpty(id)) return null;
 
@@ -254,6 +255,7 @@ namespace UnifiedHealthcareSystem
                 case "34": gov = "شمال سيناء"; break;
                 case "35": gov = "جنوب سيناء"; break;
                 case "38": gov = "خارج الجمهورية"; break;
+                case "88": gov = "خارج الجمهورية"; break;
                 default: return "Error";
             }
             return gov;
@@ -267,20 +269,24 @@ namespace UnifiedHealthcareSystem
                 var allAppointments = manager.GetAllAppointments();
 
                 var myBookings = allAppointments
-                    .Where(a => a.DoctorID == account.id)
+                    .Where(a => a.DoctorID == account.id && a.Status == "Pending")
                     .Select(a => new
                     {
+                        AppointmentID = a.AppointmentID,
                         اسم_المريض = a.FullName,
                         الرقم_القومي = a.NationalID,
                         الموبايل = a.PhoneNumber,
-                        التاريخ = a.AppointmentDate,
-                        الحالة = a.Status
+                        التاريخ = a.AppointmentDate
                     }).ToList();
 
                 dgvBooking.DataSource = myBookings;
 
                 if (dgvBooking.Columns.Count > 0)
+                {
                     dgvBooking.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+                    if (dgvBooking.Columns.Contains("AppointmentID"))
+                        dgvBooking.Columns["AppointmentID"]!.Visible = false;
+                }
             }
             catch (Exception ex)
             {
@@ -288,22 +294,72 @@ namespace UnifiedHealthcareSystem
             }
         }
 
+        // عند دبل كليك على حجز: بنعرض بيانات المريض ونأكد إتمام الزيارة قبل تغيير حالة الحجز
         private void dgvBooking_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex >= 0)
+            if (e.RowIndex < 0) return;
+
+            DataGridViewRow row = dgvBooking.Rows[e.RowIndex];
+
+            txtName.Text = row.Cells["اسم_المريض"].Value?.ToString();
+            txtNationalID_Add.Text = row.Cells["الرقم_القومي"].Value?.ToString();
+            txtPhone.Text = row.Cells["الموبايل"].Value?.ToString();
+
+            string? appointmentId = row.Cells["AppointmentID"].Value?.ToString();
+            if (string.IsNullOrEmpty(appointmentId)) return;
+
+            DialogResult confirm = MessageBox.Show(
+                "هل تم إتمام هذه الزيارة؟ سيتم تحويل حالة الحجز الي مكتمل وإزالته من قائمة الحجوزات المعلقة.",
+                "تأكيد إتمام الحجز",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question);
+
+            if (confirm == DialogResult.Yes)
             {
-                DataGridViewRow row = dgvBooking.Rows[e.RowIndex];
-
-                txtName.Text = row.Cells["اسم_المريض"].Value.ToString();
-                txtNationalID_Add.Text = row.Cells["الرقم_القومي"].Value.ToString();
-                txtPhone.Text = row.Cells["الموبايل"].Value.ToString();
-
-                string patientID = row.Cells["الرقم_القومي"].Value.ToString();
-                manager.RemoveAppointment(patientID, account.id);
-
+                manager.CompleteAppointment(appointmentId);
                 RefreshBookingGrid();
-
             }
+        }
+
+        // حذف سجل المريض من قائمة الطبيب الحالي بعد تأكيد
+        private void btnDeletePatient_Click(object sender, EventArgs e)
+        {
+            string nationalId = txtNationalID_Delete.Text.Replace(" ", "").Trim();
+
+            if (nationalId.Length != 14)
+            {
+                MessageBox.Show("ادخل رقمًا قوميًا صحيحًا (14 رقمًا).", "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            var record = manager.GetPatientById(nationalId);
+            if (record == null)
+            {
+                MessageBox.Show("لا يوجد مريض بهذا الرقم القومي.", "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            DialogResult confirm = MessageBox.Show(
+                $"هل تريد حذف المريض \"{record.patients.FullName}\" من سجلاتك؟",
+                "تأكيد الحذف",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Warning);
+
+            if (confirm != DialogResult.Yes) return;
+
+            if (manager.RemoveDoctorFromPatient(nationalId, account.id))
+            {
+                RefreshMyPatients();
+                txtNationalID_Delete.Clear();
+                MessageBox.Show("تم حذف المريض من سجلاتك.", "تم", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+        private void btnRefreshPatients_Click(object sender, EventArgs e)
+        {
+            manager = new PatientManager();
+            RefreshMyPatients();
+            RefreshBookingGrid();
         }
 
 

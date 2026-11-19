@@ -33,8 +33,6 @@
             timer1 = new System.Windows.Forms.Timer(components);
             pictureBox1 = new PictureBox();
             label1 = new Label();
-            imageList1 = new ImageList(components);
-            timer2 = new System.Windows.Forms.Timer(components);
             label2 = new Label();
             progressBar1 = new ProgressBar();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
@@ -63,25 +61,12 @@
             label1.Dock = DockStyle.Fill;
             label1.Font = new Font("Sitka Small", 26.25F, FontStyle.Bold | FontStyle.Italic, GraphicsUnit.Point, 0);
             label1.ForeColor = Color.Cyan;
-            label1.ImageList = imageList1;
             label1.Location = new Point(0, 0);
             label1.Name = "label1";
             label1.Size = new Size(653, 493);
             label1.TabIndex = 4;
             label1.Text = "\r\nWelcome To Unified Healthcare System (UHS)";
             label1.TextAlign = ContentAlignment.MiddleCenter;
-            // 
-            // imageList1
-            // 
-            imageList1.ColorDepth = ColorDepth.Depth32Bit;
-            imageList1.ImageStream = (ImageListStreamer)resources.GetObject("imageList1.ImageStream");
-            imageList1.TransparentColor = Color.Transparent;
-            imageList1.Images.SetKeyName(0, "pharmacy.png");
-            // 
-            // timer2
-            // 
-            timer2.Enabled = true;
-            timer2.Interval = 2000;
             // 
             // label2
             // 
@@ -132,8 +117,6 @@
         private System.Windows.Forms.Timer timer1;
         private PictureBox pictureBox1;
         private Label label1;
-        private ImageList imageList1;
-        private System.Windows.Forms.Timer timer2;
         private Label label2;
         private ProgressBar progressBar1;
     }

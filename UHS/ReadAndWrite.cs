@@ -2,24 +2,34 @@
 
 namespace UnifiedHealthcareSystem
 {
-    //هذا الكلاس خاص بإنشاء حساب جديد للدكاترة وتخزينه في ملف جيسون
+    //هذا الكلاس خاص بقراءة وكتابة ملفات جيسون
     class Read_Write
     {
-        /* هذا الميثود يقوم بكتابة البيانات في ملف جيسون من خلال تحويل الكائن الي نص جيسون باستخدام JsonSerializer ثم كتابة النص في الملف باستخدام File.WriteAllText */
-        public static void WriteInFile(string FileName, object Data)
+        /* كل الملفات بتتخزن جنب ملف التشغيل نفسه (BaseDirectory) بدل ما تعتمد علي مكان فتح البرنامج */
+        public static string ResolvePath(string FileName)
         {
-            string updatedJson = JsonSerializer.Serialize(Data, new JsonSerializerOptions { WriteIndented = true });
-            File.WriteAllText(FileName, updatedJson);
+            return Path.Combine(AppContext.BaseDirectory, Path.GetFileName(FileName));
         }
 
-        /* هذا الميثود يقوم بقراءة البيانات من ملف جيسون من خلال التحقق من وجود الملف باستخدام File.Exists
-         * ثم قراءة النص من الملف باستخدام File.ReadAllText */
-        public static string ReadFromFile(string FileName)
+        /* بيحول الكائن الي نص جيسون ويكتبه في ملف مؤقت الاول ثم يستبدل الملف الاصلي
+         * عشان لو البرنامج اتقفل في نص الكتابة الملف القديم ما يتلفش */
+        public static void WriteInFile(string FileName, object Data)
         {
-            if (File.Exists(FileName))
+            string path = ResolvePath(FileName);
+            string updatedJson = JsonSerializer.Serialize(Data, new JsonSerializerOptions { WriteIndented = true });
+
+            string tempPath = path + ".tmp";
+            File.WriteAllText(tempPath, updatedJson);
+            File.Move(tempPath, path, true);
+        }
+
+        /* بترجع محتوي الملف لو موجود، ولو مش موجود بترجع null */
+        public static string? ReadFromFile(string FileName)
+        {
+            string path = ResolvePath(FileName);
+            if (File.Exists(path))
             {
-                string data = File.ReadAllText(FileName);
-                return data;
+                return File.ReadAllText(path);
             }
             return null;
         }

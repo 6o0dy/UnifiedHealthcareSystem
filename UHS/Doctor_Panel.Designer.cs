@@ -422,6 +422,7 @@
             btnDeletePatient.TabIndex = 2;
             btnDeletePatient.Text = "حذف";
             btnDeletePatient.UseVisualStyleBackColor = false;
+            btnDeletePatient.Click += btnDeletePatient_Click;
             // 
             // grpPatientsList
             // 
@@ -467,6 +468,7 @@
             btnRefreshPatients.Size = new Size(110, 28);
             btnRefreshPatients.TabIndex = 1;
             btnRefreshPatients.Text = "تحديث القائمة";
+            btnRefreshPatients.Click += btnRefreshPatients_Click;
             // 
             // lblTitle
             // 

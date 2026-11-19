@@ -35,7 +35,7 @@ namespace UnifiedHealthcareSystem
 
         private void Main_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (Application.OpenForms.Count == 2) Application.Exit();
+            if (AppFlow.IsLastVisibleForm(this)) Application.Exit();
         }
 
 

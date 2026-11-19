@@ -20,7 +20,7 @@
         {
             if (txtPatientNID.Text.Length == 14 && double.TryParse(txtPatientNID.Text, out _))
             {
-                string[] AnalyzedID = Doctor_Panel.AnalyzeID(txtPatientNID.Text);
+                string[]? AnalyzedID = Doctor_Panel.AnalyzeID(txtPatientNID.Text);
                 if (AnalyzedID != null && AnalyzedID.Length > 0)
                 {
                     new Patient_Panel(txtPatientNID.Text).Show();
@@ -33,7 +33,7 @@
 
         private void Paition_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (Application.OpenForms.Count == 2) Application.Exit();
+            if (AppFlow.IsLastVisibleForm(this)) Application.Exit();
         }
     }
 }

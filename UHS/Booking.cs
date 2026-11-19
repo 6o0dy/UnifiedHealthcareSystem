@@ -12,11 +12,14 @@ namespace UnifiedHealthcareSystem
             InitializeComponent();
 
             txtNationalID.Text = me[1];
-            string[] AnalyzedID = Doctor_Panel.AnalyzeID(me[1]);
-            txtDOB.Text = AnalyzedID[0];
-            txtAge.Text = AnalyzedID[1];
-            txtGender.Text = AnalyzedID[2];
-            txtGovernorate.Text = AnalyzedID[3];
+            string[]? AnalyzedID = Doctor_Panel.AnalyzeID(me[1]);
+            if (AnalyzedID != null)
+            {
+                txtDOB.Text = AnalyzedID[0];
+                txtAge.Text = AnalyzedID[1];
+                txtGender.Text = AnalyzedID[2];
+                txtGovernorate.Text = AnalyzedID[3];
+            }
 
             if (me[0].Length > 0 && me[2].Length > 0)
             {
@@ -57,7 +60,7 @@ namespace UnifiedHealthcareSystem
 
                     string[] hidden = { "الرقم_القومي", "البريد_الإلكتروني", "اسم_المستخدم", "اسم_العيادة" };
                     foreach (var col in hidden)
-                        if (dgvDoctor.Columns.Contains(col)) dgvDoctor.Columns[col].Visible = false;
+                        if (dgvDoctor.Columns.Contains(col)) dgvDoctor.Columns[col]!.Visible = false;
                 }
             }
             catch (Exception ex)
@@ -73,10 +76,10 @@ namespace UnifiedHealthcareSystem
             {
                 DataGridViewRow row = dgvDoctor.Rows[e.RowIndex];
 
-                DoctorName.Text = row.Cells["الاسم"].Value.ToString();
-                Specialization.Text = row.Cells["التخصص"].Value.ToString();
-                ClinicNumber.Text = row.Cells["اسم_العيادة"].Value.ToString();
-                DoctorPhone.Text = row.Cells["الموبايل"].Value.ToString();
+                DoctorName.Text = row.Cells["الاسم"].Value?.ToString();
+                Specialization.Text = row.Cells["التخصص"].Value?.ToString();
+                ClinicNumber.Text = row.Cells["اسم_العيادة"].Value?.ToString();
+                DoctorPhone.Text = row.Cells["الموبايل"].Value?.ToString();
             }
         }
 
@@ -85,19 +88,39 @@ namespace UnifiedHealthcareSystem
         {
             try
             {
+                if (dgvDoctor.SelectedRows.Count == 0)
+                {
+                    MessageBox.Show("اختر طبيبًا من القائمة أولاً.", "تنبيه", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                DataGridViewRow doctorRow = dgvDoctor.SelectedRows[0];
+
                 Appointment newApp = new Appointment
                 {
                     NationalID = txtNationalID.Text,
                     FullName = txtName.Text,
                     PhoneNumber = txtPhone.Text,
-                    DoctorID = dgvDoctor.CurrentRow.Cells["الرقم_القومي"].Value.ToString(),
-                    DoctorName = DoctorName.Text,
-                    Specialty = Specialization.Text,
-
+                    DoctorID = doctorRow.Cells["الرقم_القومي"].Value?.ToString() ?? "",
+                    DoctorName = doctorRow.Cells["الاسم"].Value?.ToString() ?? "",
+                    Specialty = doctorRow.Cells["التخصص"].Value?.ToString() ?? "",
                     AppointmentDate = dtpNextVisit.Value.ToString("yyyy-MM-dd")
                 };
 
                 PatientManager manager = new PatientManager();
+
+                bool duplicate = manager.GetAllAppointments().Any(a =>
+                    a.NationalID == newApp.NationalID &&
+                    a.DoctorID == newApp.DoctorID &&
+                    a.AppointmentDate == newApp.AppointmentDate &&
+                    a.Status == "Pending");
+
+                if (duplicate)
+                {
+                    MessageBox.Show("لديك حجز معلق بالفعل مع هذا الطبيب في نفس التاريخ.", "تنبيه", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
                 manager.SaveNewAppointment(newApp);
 
                 MessageBox.Show("تم الحجز بنجاح!");
@@ -151,6 +174,7 @@ namespace UnifiedHealthcareSystem
         {
             this.DoubleBuffered = true; // بيمنع الوميض أو الرعشة في الرسم
             this.ResizeRedraw = true;   // بيخلي التدرج يتعدل لو كبرت الشاشة
+            dtpNextVisit.MinDate = DateTime.Today; // مينفعش يحدد موعد في الماضي
             Design.Corner(BookingOk, 20);
             Design.Corner(btnBack, 20);
         }

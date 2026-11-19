@@ -1,4 +1,4 @@
-using System.Data;
+﻿using System.Data;
 using System.Drawing.Drawing2D;
 
 namespace UnifiedHealthcareSystem
@@ -6,7 +6,7 @@ namespace UnifiedHealthcareSystem
     public partial class pharmacist : Form
     {
         PatientManager manager;
-        recordData currentPatient;
+        recordData? currentPatient;
 
         public pharmacist()
         {
@@ -18,6 +18,12 @@ namespace UnifiedHealthcareSystem
         // دالة لتحميل وعرض زيارات المريض في DataGridView، حيث يتم عرض جميع الزيارات المرتبطين بالمريض وترتيبها حسب التاريخ
         private void LoadPatientVisits()
         {
+            if (currentPatient == null || currentPatient.patients == null || currentPatient.patients.Doctors == null)
+            {
+                dgvVisits.DataSource = null;
+                return;
+            }
+
             var allVisits = currentPatient.patients.Doctors
                 .SelectMany(d => d.Visits.Select(v => new
                 {
@@ -26,13 +32,17 @@ namespace UnifiedHealthcareSystem
                     التخصص = d.Specialty,
                     العلاج = v.Treatment
                 }))
-                .OrderByDescending(v => v.التاريخ)
+                .OrderByDescending(v =>
+                {
+                    DateTime dt;
+                    return DateTime.TryParse(v.التاريخ, out dt) ? dt : DateTime.MinValue;
+                })
                 .ToList();
 
             dgvVisits.DataSource = allVisits;
 
             if (dgvVisits.Columns.Contains("العلاج"))
-                dgvVisits.Columns["العلاج"].Visible = false;
+                dgvVisits.Columns["العلاج"]!.Visible = false;
         }
 
         // حدث لتغيير النص في مربع الرقم القومي، حيث يتم التحقق من صحة الرقم القومي وتحميل بيانات المريض إذا كان مسجلاً في النظام، أو عرض رسالة خطأ إذا لم يكن كذلك
@@ -76,7 +86,7 @@ namespace UnifiedHealthcareSystem
 
         private void pharmacist_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (Application.OpenForms.Count == 2) Application.Exit();
+            if (AppFlow.IsLastVisibleForm(this)) Application.Exit();
         }
 
         //=========================================================================================

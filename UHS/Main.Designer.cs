@@ -170,7 +170,6 @@
             Text = "Main";
             FormClosing += Main_FormClosing;
             Load += Main_Load;
-            Click += Main_Load;
             Paint += Main_Paint;
             ResumeLayout(false);
             PerformLayout();

@@ -1,180 +1,109 @@
 ﻿using System.Text.Json;
 
-//هذا الكلاس خاص بإنشاء حساب جديد للدكاترة وتخزينه في ملف جيسون
 namespace UnifiedHealthcareSystem
 {
     //هذا الكلاس هو الام الذي يحتوي علي كل شئ عن بالدكتور
     public class CreatAccount
     {
-        public static char[] Check = new char[8];
-        private string ID, Email, Username;
-
-        public string id
-        {
-            get { return ID; }
-            set
-            {
-                if (value.Length == 14) { ID = value; Check[1] = 'T'; }
-                else Check[1] = 'F';
-            }
-        }
-        public string email
-        {
-            get { return Email; }
-            set
-            {
-                if (value.Length > 15 && value.EndsWith("@gmail.com")) { Email = value; Check[5] = 'T'; }
-                else Check[5] = 'F';
-            }
-        }
-        public string username
-        {
-            get { return Username; }
-            set
-            {
-                if (value.Length > 4) { Username = value; Check[6] = 'T'; }
-                else Check[6] = 'F';
-            }
-        }
+        public string id { get; set; } = "";
+        public string email { get; set; } = "";
+        public string username { get; set; } = "";
         public Info info { get; set; } = new Info();
     }
 
     // هذا الكلاس الذي يحتوي علي المعلومات الشخصية للدكتور
     public class Info
     {
-        private string Name, Phone, Specialty, ClinicName, Password;
-
-        public string name
-        {
-            get { return Name; }
-            set
-            {
-                if (value.Length > 3) { Name = value; CreatAccount.Check[0] = 'T'; }
-                else CreatAccount.Check[0] = 'F';
-            }
-        }
-        public string phone
-        {
-            get { return Phone; }
-            set
-            {
-                if (value.Length == 11) { Phone = value; CreatAccount.Check[2] = 'T'; }
-                else CreatAccount.Check[2] = 'F';
-            }
-        }
-        public string specialty
-        {
-            get { return Specialty; }
-            set
-            {
-                if (value.Length > 3 && value != "Select") { Specialty = value; CreatAccount.Check[3] = 'T'; }
-                else CreatAccount.Check[3] = 'F';
-            }
-        }
-        public string clinicName
-        {
-            get { return ClinicName; }
-            set
-            {
-                if (value.Length > 3) { ClinicName = value; CreatAccount.Check[4] = 'T'; }
-                else CreatAccount.Check[4] = 'F';
-            }
-        }
-        public string password
-        {
-            get { return Password; }
-            set
-            {
-                if (value.Length > 5) { Password = value; CreatAccount.Check[7] = 'T'; }
-                else CreatAccount.Check[7] = 'F';
-            }
-        }
-
+        public string name { get; set; } = "";
+        public string phone { get; set; } = "";
+        public string specialty { get; set; } = "";
+        public string clinicName { get; set; } = "";
+        public string password { get; set; } = "";
     }
 
-    // هذا الكلاس هو الذي يقوم بإنشاء حساب جديد من خلاله ويتم فحص البيانات المدخلة من خلال ميثود ValidateData وفي حالة كانت صحيحة يتم اضافة الحساب الجديد الي ملف جيسون الخاص بالحسابات
-    class SetAccountToFile
+    // هذا الكلاس هو الذي يقوم بفحص بيانات الحساب الجديد ثم إضافته الي ملف جيسون الخاص بالحسابات
+    static class SetAccountToFile
     {
-        public SetAccountToFile(ref string txtID, ref string txtEmail, ref string txtUserNew, ref string txtName, ref string txtPhone, ref string txtClinic, ref string txtSpec, ref string txtPassNew)
+        public static bool Register(CreatAccount account)
         {
-            // انشاء كائن جديد من نوع CreatAccount ويتم تمرير البيانات المدخله من خلاله ليتم فحصها
-            CreatAccount account = new CreatAccount
+            List<string> errors = Validate(account);
+            if (errors.Count > 0)
             {
-                id = txtID,
-                email = txtEmail,
-                username = txtUserNew,
-                info = new Info
-                {
-                    name = txtName,
-                    phone = txtPhone,
-                    clinicName = txtClinic,
-                    specialty = txtSpec,
-                    password = txtPassNew
-                }
-            };
-
-            // يتم فحص البيانات المدخلة من خلال ميثود ValidateData وفي حالة كانت صحيحة يتم اضافة الحساب الجديد الي ملف جيسون الخاص بالحسابات
-            if (ValidateData())
-            {
-                GetAccountsFromFile all = new GetAccountsFromFile();
-
-                CreatAccount[] allAccounts = all.AllAccounts();
-                Array.Resize(ref allAccounts, allAccounts.Length + 1);
-                allAccounts[allAccounts.Length - 1] = account;
-
-                Read_Write.WriteInFile("DoctorAccount.json", allAccounts);
-
-                MessageBox.Show("تم انشاء الحساب بنجاح!", "نجاح", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                txtName = ""; txtEmail = ""; txtPhone = ""; txtClinic = ""; txtSpec = ""; txtPassNew = ""; txtID = ""; txtUserNew = "";
+                MessageBox.Show(string.Join("\n", errors), "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
             }
+
+            CreatAccount[] allAccounts = new GetAccountsFromFile().AllAccounts();
+
+            if (allAccounts.Any(a => a != null && a.id == account.id))
+            {
+                MessageBox.Show("هذا الرقم القومي مسجل بالفعل.", "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+            if (allAccounts.Any(a => a != null && a.username == account.username))
+            {
+                MessageBox.Show("اسم المستخدم مسجل بالفعل، اختر اسمًا آخر.", "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+            if (allAccounts.Any(a => a != null && a.email == account.email))
+            {
+                MessageBox.Show("هذا البريد الإلكتروني مسجل بالفعل.", "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+
+            List<CreatAccount> updated = allAccounts.ToList();
+            updated.Add(account);
+
+            try
+            {
+                Read_Write.WriteInFile("DoctorAccount.json", updated);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("تعذر حفظ بيانات الحساب: " + ex.Message, "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+
+            MessageBox.Show("تم انشاء الحساب بنجاح!", "نجاح", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            return true;
         }
 
-        // ميثود لعرض الاخطاء التي حدثت في عملية انشاء الحساب
-        private bool ValidateData()
+        // بترجع قائمة بكل الأخطاء الموجودة في البيانات المدخلة (فاضية لو كل حاجة صح)
+        private static List<string> Validate(CreatAccount account)
         {
-            bool isValid = true;
-            string error = "";
-            for (int i = 0; i < CreatAccount.Check.Length; i++)
-            {
-                string errorMessage = i switch
-                {
-                    0 => "لقب المستخدم لازم علي الاقل 4 حروف",
-                    1 => "الرقم القومي لازم يكون 14 رقم",
-                    2 => "رقم الهاتف لازم يكون 11 رقم",
-                    3 => "التخصص لازم علي الاقل 5 حروف",
-                    4 => "اسم العيادة لازم علي الاقل 5 حروف",
-                    5 => "الايميل لازم يحتوي في الاخر علي '@gmail.com'.",
-                    6 => "اسم المستخدم لازم يكون علي الاقل 4 حروف",
-                    7 => "الباسورد يجب ان لا يقل عن 6 ارقام او حروف",
-                    _ => $"Field {i + 1} is invalid."
-                };
-                if (CreatAccount.Check[i] == 'F')
-                {
-                    error += errorMessage + "\n";
-                    isValid = false;
-                }
-                if (!isValid && i == CreatAccount.Check.Length - 1)
-                {
-                    MessageBox.Show(error, "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return isValid;
-                }
-            }
-            return isValid;
+            List<string> errors = new List<string>();
+            Info info = account.info ?? new Info();
+
+            if (account.id.Length != 14) errors.Add("الرقم القومي لازم يكون 14 رقم.");
+            if (info.name.Length <= 3) errors.Add("الاسم لازم يكون أكثر من 3 حروف.");
+            if (info.phone.Length != 11) errors.Add("رقم الهاتف لازم يكون 11 رقم.");
+            if (info.specialty.Length <= 3 || info.specialty == "Select") errors.Add("التخصص مطلوب ويجب اختياره من القائمة.");
+            if (info.clinicName.Length <= 3) errors.Add("اسم العيادة لازم يكون أكثر من 3 حروف.");
+            if (account.email.Length <= 15 || !account.email.EndsWith("@gmail.com")) errors.Add("الايميل لازم يكون أطول من 15 حرف وينتهي بـ '@gmail.com'.");
+            if (account.username.Length <= 4) errors.Add("اسم المستخدم لازم يكون أكثر من 4 حروف.");
+            if (info.password.Length <= 5) errors.Add("الباسورد يجب ألا يقل عن 6 حروف.");
+
+            return errors;
         }
     }
 
-    //هذا الكلاس خاص بقراءة كل الحسابات الموجودة في ملف جيسون وتحويلها الي List من نوع CreatAccount
+    //هذا الكلاس خاص بقراءة كل الحسابات الموجودة في ملف جيسون
     class GetAccountsFromFile
     {
         public CreatAccount[] AllAccounts()
         {
-            string json = Read_Write.ReadFromFile("DoctorAccount.json");
-            if (json != null)
+            try
             {
-                return JsonSerializer.Deserialize<CreatAccount[]>(json);
+                string? json = Read_Write.ReadFromFile("DoctorAccount.json");
+                if (string.IsNullOrWhiteSpace(json)) return Array.Empty<CreatAccount>();
+
+                return JsonSerializer.Deserialize<CreatAccount[]>(json) ?? Array.Empty<CreatAccount>();
             }
-            return new CreatAccount[0];
+            catch (Exception ex)
+            {
+                MessageBox.Show("تعذر قراءة ملف الحسابات: " + ex.Message, "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return Array.Empty<CreatAccount>();
+            }
         }
     }
 }

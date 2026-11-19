@@ -5,7 +5,7 @@ namespace UnifiedHealthcareSystem
 {
     public partial class Patient_Panel : Form
     {
-        recordData MyInfo;
+        recordData? MyInfo;
         public Patient_Panel(string MyID)
         {
             InitializeComponent();
@@ -20,12 +20,14 @@ namespace UnifiedHealthcareSystem
 
         private void btnRefresh_Click(object sender, EventArgs e)
         {
+            // بنعيد قراءة البيانات من الملف عشان أي تحديث من الطبيب يظهر
+            ReadMyInfo(MyInfo != null ? MyInfo.patients.NationalID : txtNationalID.Text);
             MessageBox.Show("تم تحديث القائمة.", "تحديث", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void Patient_Panel_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (Application.OpenForms.Count == 2) Application.Exit();
+            if (AppFlow.IsLastVisibleForm(this)) Application.Exit();
         }
 
         // دالة لقراءة معلومات المريض وعرضها في الواجهة
@@ -39,15 +41,11 @@ namespace UnifiedHealthcareSystem
                 txtName.Text = MyInfo.patients.FullName;
 
                 txtNationalID.Text = MyInfo.patients.NationalID;
-                string[] AnalyzedID = Doctor_Panel.AnalyzeID(id);
-                txtDOB.Text = AnalyzedID[0];
-                txtAge.Text = AnalyzedID[1];
-                txtGender.Text = AnalyzedID[2];
-                txtGovernorate.Text = AnalyzedID[3];
+                FillIDInfo(id);
 
                 txtPhone.Text = MyInfo.patients.PhoneNumber;
 
-                var allVisits = MyInfo.patients.Doctors.SelectMany(d => d.Visits.Select(v => new
+                var allVisits = (MyInfo.patients.Doctors ?? new List<doctor>()).SelectMany(d => d.Visits.Select(v => new
                 {
                     تاريخ_الزيارة = v.Date,
                     الدكتور = d.FullName,
@@ -69,23 +67,31 @@ namespace UnifiedHealthcareSystem
 
                 string[] hidden = { "العلاج", "التقارير" };
                 foreach (var col in hidden)
-                    if (dgvVisits.Columns.Contains(col)) dgvVisits.Columns[col].Visible = false;
+                    if (dgvVisits.Columns.Contains(col)) dgvVisits.Columns[col]!.Visible = false;
 
-                dgvVisits_SelectionChanged(null, null);
+                dgvVisits_SelectionChanged(this, EventArgs.Empty);
             }
             else
             {
                 txtName.Text = "غير مسجل";
 
                 txtNationalID.Text = id;
-                string[] AnalyzedID = Doctor_Panel.AnalyzeID(id);
-                txtDOB.Text = AnalyzedID[0];
-                txtAge.Text = AnalyzedID[1];
-                txtGender.Text = AnalyzedID[2];
-                txtGovernorate.Text = AnalyzedID[3];
+                FillIDInfo(id);
 
                 txtPhone.Text = "غير مسجل";
+                dgvVisits.DataSource = null;
             }
+        }
+
+        // دالة بتستخرج تاريخ الميلاد والعمر والجنس والمحافظة من الرقم القومي (بتتعامل مع الرقم الغلط بهدوء)
+        private void FillIDInfo(string id)
+        {
+            string[]? analyzedID = Doctor_Panel.AnalyzeID(id);
+
+            txtDOB.Text = analyzedID?[0] ?? "";
+            txtAge.Text = analyzedID?[1] ?? "";
+            txtGender.Text = analyzedID?[2] ?? "";
+            txtGovernorate.Text = analyzedID?[3] ?? "";
         }
 
         // دالة لعرض تفاصيل الزيارة المحددة في الحقول المتاحة
@@ -118,7 +124,7 @@ namespace UnifiedHealthcareSystem
             this.ResizeRedraw = true;   // بيخلي التدرج يتعدل لو كبرت الشاشة
             Design.Corner(btnRefresh, 20);
             Design.Corner(btnBack, 20);
-            Design.Corner(booking, 50);
+            Design.Corner(booking, 20);
         }
     }
 }

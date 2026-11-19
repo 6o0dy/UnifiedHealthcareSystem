@@ -12,30 +12,37 @@
 
         private void btnRegister_Click(object sender, EventArgs e)
         {
-            //يتم ارسال البيانات الي الكلاس المسؤول عن فحص البيانات وكتابتها في ملف ال json اذا كانت البيانات صحيحة
-            string name = txtName.Text, email = txtEmail.Text, phone = txtPhone.Text, clinic = txtClinic.Text,
-                spec = txtSpec.Text, pass = txtPassNew.Text, id = txtID.Text, user = txtUserNew.Text;
+            //يتم بناء الحساب من البيانات المدخلة ثم تمريره للكلاس المسؤول عن الفحص والحفظ في ملف ال json
+            CreatAccount account = new CreatAccount
+            {
+                id = txtID.Text,
+                email = txtEmail.Text,
+                username = txtUserNew.Text,
+                info = new Info
+                {
+                    name = txtName.Text,
+                    phone = txtPhone.Text,
+                    clinicName = txtClinic.Text,
+                    specialty = comboBoxSpec.Text,
+                    password = txtPassNew.Text
+                }
+            };
 
-            new SetAccountToFile(ref id, ref email, ref user, ref name, ref phone, ref clinic, ref spec, ref pass);
-
-            txtID.Text = id; txtEmail.Text = email; txtUserNew.Text = user; txtName.Text = name;
-            txtPhone.Text = phone; txtClinic.Text = clinic; txtSpec.Text = spec; txtPassNew.Text = pass;
-        }
-
-        private void comboBoxSpec_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (comboBoxSpec.SelectedIndex !> 0)
-                txtSpec.Text = comboBoxSpec.Text.Replace("__", "-").Replace('_', ' ');
-        }
-
-        private void comboBoxSpec_Leave(object sender, EventArgs e)
-        {
-            comboBoxSpec.Text = txtSpec.Text;
+            if (SetAccountToFile.Register(account))
+            {
+                txtID.Clear(); txtEmail.Clear(); txtUserNew.Clear(); txtName.Clear();
+                txtPhone.Clear(); txtClinic.Clear(); txtPassNew.Clear();
+            }
         }
 
         private void AddDataInComBox()
         {
-            comboBoxSpec.DataSource = Enum.GetValues(typeof(Specialty));
+            // بنعرض أسماء التخصصات بشكل مقروء بدل ال underscores اللي في اسم ال enum
+            var specialties = Enum.GetNames(typeof(Specialty))
+                .Select(n => n.Replace("__", "-").Replace('_', ' '))
+                .ToList();
+
+            comboBoxSpec.DataSource = specialties;
             comboBoxSpec.SelectedIndex = 0;
         }
 
@@ -47,12 +54,12 @@
 
         private void Administrator_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (Application.OpenForms.Count == 2) Application.Exit();
+            if (AppFlow.IsLastVisibleForm(this)) Application.Exit();
         }
 
         //============================================
 
-        private void btnRegister_Paint(object sender, PaintEventArgs e)
+        private void Administrator_Load(object sender, EventArgs e)
         {
             this.DoubleBuffered = true; // بيمنع الوميض أو الرعشة في الرسم
             this.ResizeRedraw = true;   // بيخلي التدرج يتعدل لو كبرت الشاشة
